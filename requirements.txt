@@ -1,2 +1,3 @@
 pyodbc
 simple-term-menu
+tabulate

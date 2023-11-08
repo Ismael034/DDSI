@@ -2,6 +2,7 @@ import query
 import database
 import random
 import datetime
+from tabulate import tabulate
 from simple_term_menu import TerminalMenu
 
 def main():
@@ -39,9 +40,17 @@ def main():
             show_menu = True
 
         elif menu_entry_index == 2:
-            print(q.get_stock())
-            print(q.get_pedido())
-            print(q.get_detalle_pedido())
+            stock = q.get_stock()
+            pedido = q.get_pedido()
+            detalle_pedido = q.get_detalle_pedido()
+                        
+            print("Tabla Stock:")
+            print(tabulate(stock, headers=["Código", "Cantidad"], tablefmt="fancy_grid"))
+            print("Tabla Pedido:")
+            print(tabulate(pedido, headers=["Código", "Código cliente", "Código producto", "Fecha"], tablefmt="fancy_grid"))
+            print("Tabla Detalle Pedido:")
+            print(tabulate(detalle_pedido, headers=["Código pedido", "Código producto", "Cantidad"], tablefmt="fancy_grid"))
+            print()
             show_menu = True
         
         elif menu_entry_index == 3:

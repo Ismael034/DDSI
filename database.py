@@ -25,6 +25,7 @@ class database:
 
         except pyodbc.Error as ex:
             print("Error: ", ex)
+            exit()
 
     def disconnect(self):
         self.cursor.close()
