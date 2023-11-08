@@ -14,8 +14,14 @@ Para ejecutar el seminario se debe de instalar previamente el [driver odbc de De
 pip3 install -r requirements.txt
 ```
 
-Para ejecutar el programa, introducir
+Se deberá crear un fichero `connection.txt` con el usuario y contraseña de la base de datos separados por una línea
 
+```
+x12345678
+x12345678
+```
+
+Una vez creado, ejecutar con
 ```
 python3 main.py
 ```
