@@ -34,9 +34,57 @@ def main():
             show_menu = True
             
         elif menu_entry_index == 1:
+            opciones_pedido = ["Añadir detalle de producto", 
+                "Eliminar todos los detalles de pedido", 
+                "Cancelar pedido",
+                "Finalizar pedido"
+            ]
+            
+            cpedido = input("Introduzca el código del pedido: ")
             ccliente = input("Introduzca el código del cliente: ")
-            cproducto = input("Introduzca el código del producto: ")
-            q.insert_pedido(ccliente, cproducto, datetime.datetime.now().date())
+            q.insert_pedido(cpedido, ccliente, datetime.datetime.now().date())
+
+            show_sub_menu = True
+            menu_pedido = TerminalMenu(opciones_pedido)
+            while True:
+                if show_sub_menu:
+                    menu_pedido_index = menu_pedido.show()
+                    show_sub_menu = False
+
+                if menu_pedido_index == 0:
+                    cantidad = int(input("Introduzca la cantidad: "))
+                    cproducto = int(input("Introduzca el código del producto: "))
+
+                    cantidad_stock = q.get_cantidad_stock(cproducto)
+
+                    try:
+                        stock_resultante = cantidad_stock[0] - cantidad
+                    except TypeError:
+                        print("No existe el producto")
+                        break
+                    
+                    if stock_resultante < 0:
+                        print("No hay suficiente stock")
+                    else:
+                        q.insert_detalle_pedido(cpedido, ccliente, cantidad)
+                        q.update_stock(cproducto, stock_resultante)
+
+                    show_sub_menu = True
+
+                elif menu_pedido_index == 1:
+                    q.delete_detalle_pedido(cpedido)
+                    show_sub_menu = True
+
+                elif menu_pedido_index == 2:
+                    db.rollback()
+                    print("Pedido cancelado")
+                    break
+                
+                elif menu_pedido_index == 3:
+                    db.commit()
+                    print("Pedido finalizado")
+                    break
+                
             show_menu = True
 
         elif menu_entry_index == 2:
@@ -45,9 +93,9 @@ def main():
             detalle_pedido = q.get_detalle_pedido()
                         
             print("Tabla Stock:")
-            print(tabulate(stock, headers=["Código", "Cantidad"], tablefmt="fancy_grid"))
+            print(tabulate(stock, headers=["Código pedido", "Cantidad"], tablefmt="fancy_grid"))
             print("Tabla Pedido:")
-            print(tabulate(pedido, headers=["Código", "Código cliente", "Fecha pedido"], tablefmt="fancy_grid"))
+            print(tabulate(pedido, headers=["Código pedido", "Código cliente", "Fecha pedido"], tablefmt="fancy_grid"))
             print("Tabla Detalle Pedido:")
             print(tabulate(detalle_pedido, headers=["Código pedido", "Código producto", "Cantidad"], tablefmt="fancy_grid"))
             print()

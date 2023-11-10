@@ -46,7 +46,9 @@ class database:
     def rollback(self):
         self.connection.rollback()
 
+    def savepoint(self, name):
+        self.cursor.execute(f"SAVEPOINT {name}")
+        
     def close(self):
         self.cursor.close()
         self.connection.close()
-        

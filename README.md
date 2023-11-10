@@ -1,4 +1,4 @@
-# Seminario 2 DDSI
+# Seminario 1 DDSI SWAD Interactive
 
 Participantes:
 - Alejandro Escobar Martínez

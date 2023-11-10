@@ -53,9 +53,9 @@ class query:
     def create_table_detalle_pedido(self):
         try:
             self.db.execute("CREATE TABLE Detalle_Pedido ("
-                            "Cpedido INTEGER REFERENCES Pedido(Cpedido),"
-                            "Cproducto INTEGER REFERENCES Stock(Cproducto),"
-                            "Cantidad INTEGER,"
+                            "Cpedido INTEGER FOREIGN KEY REFERENCES Pedido(Cpedido),"
+                            "Cproducto INTEGER FOREIGN KEY REFERENCES Stock(Cproducto),"
+                            "Cantidad INTEGER CHECK (Cantidad > 0 OR Cantidad = 0),"
                             "CONSTRAINT clave_primaria PRIMARY KEY (Cpedido,Cproducto))")
         
         except Exception as ex:
@@ -83,7 +83,6 @@ class query:
     def insert_pedido(self, cpedido, ccliente, fecha_pedido):
         try:
             self.db.execute(f"INSERT INTO Pedido VALUES ({cpedido}, {ccliente}, TO_DATE('{fecha_pedido}', 'YYYY-MM-DD'))")
-            self.db.commit()
         except Exception as ex:
             print("Error inserting pedido: ", ex)
             self.db.rollback()
@@ -94,6 +93,20 @@ class query:
             return self.db.fetchall()
         except Exception as ex:
             print("Error getting stock: ", ex)
+
+    def update_stock(self, cproducto, cantidad):
+        try:
+            self.db.execute(f"UPDATE Stock SET cantidad = {cantidad} WHERE cproducto = {cproducto}")
+        except Exception as ex:
+            print("Error updating stock: ", ex)
+            self.db.rollback()
+
+    def get_cantidad_stock(self, cproducto):
+        try:
+            self.db.execute(f"SELECT cantidad FROM Stock WHERE cproducto = {cproducto}")
+            return self.db.fetchone()
+        except Exception as ex:
+            print("Error getting cantidad stock: ", ex)
 
     def get_pedido(self):
         try:
@@ -108,5 +121,19 @@ class query:
             return self.db.fetchall()
         except Exception as ex:
             print("Error getting detalle: ", ex)
+
+    def delete_detalle_pedido(self, cpedido):
+        try:
+            self.db.execute(f"DELETE FROM Detalle_Pedido WHERE cpedido = {cpedido}")
+        except Exception as ex:
+            print("Error deleting detalle: ", ex)
+            self.db.rollback()
+
+    def insert_detalle_pedido(self, cpedido, cproducto, cantidad):
+        try:
+            self.db.execute(f"INSERT INTO Detalle_Pedido VALUES ({cpedido}, {cproducto}, {cantidad})")
+        except Exception as ex:
+            print("Error inserting detalle pedido: ", ex)
+            self.db.rollback()
 
     
