@@ -54,7 +54,7 @@ def main():
             print("Tabla Stock:")
             print(tabulate(stock, headers=["Código", "Cantidad"], tablefmt="fancy_grid"))
             print("Tabla Pedido:")
-            print(tabulate(pedido, headers=["Código", "Código cliente", "Código producto", "Fecha"], tablefmt="fancy_grid"))
+            print(tabulate(pedido, headers=["Código", "Código cliente", "Fecha pedido"], tablefmt="fancy_grid"))
             print("Tabla Detalle Pedido:")
             print(tabulate(detalle_pedido, headers=["Código pedido", "Código producto", "Cantidad"], tablefmt="fancy_grid"))
             print()
