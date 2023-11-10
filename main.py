@@ -34,8 +34,15 @@ def main():
             show_menu = True
             
         elif menu_entry_index == 1:
+            opciones_pedido = ["Añadir detalle de producto", 
+                "Eliminar todos los detalles de producto", 
+                "Cancelar pedido",
+                "Finalizar pedido"
+            ]
+            menu_pedido = TerminalMenu(opciones_pedido)
             ccliente = input("Introduzca el código del cliente: ")
             cproducto = input("Introduzca el código del producto: ")
+
             q.insert_pedido(ccliente, cproducto, datetime.datetime.now().date())
             show_menu = True
 
