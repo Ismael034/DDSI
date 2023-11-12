@@ -48,6 +48,9 @@ class database:
 
     def savepoint(self, name):
         self.cursor.execute(f"SAVEPOINT {name}")
+
+    def rollback_to_savepoint(self, name):
+        self.cursor.execute(f"ROLLBACK TO {name}")
         
     def close(self):
         self.cursor.close()
