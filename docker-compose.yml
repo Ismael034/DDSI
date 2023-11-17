@@ -1,0 +1,19 @@
+---
+version: "2.1"
+services:
+  mariadb:
+    image: lscr.io/linuxserver/mariadb:latest
+    container_name: mariadb
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+      - MYSQL_ROOT_PASSWORD=acanas23
+      - MYSQL_DATABASE=swad
+      - MYSQL_USER=admin
+      - MYSQL_PASSWORD=admin
+    volumes:
+      - ./config:/config
+    ports:
+      - 3306:3306
+    restart: unless-stopped

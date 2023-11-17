@@ -65,12 +65,6 @@ def main():
                 except ValueError:
                     print("Error: Introduzca un número entero")
 
-            pedido = q.get_pedido_by_id(cpedido)
-            if pedido != None:
-                print("Error: El pedido ya existe")
-                print()
-                show_menu = True
-                continue
             q.insert_pedido(cpedido, ccliente, datetime.datetime.now().date())
 
             pedido_savepoint = "pedido_insertado"
@@ -101,7 +95,6 @@ def main():
                     except TypeError:
                         print("Error: No existe el producto")
                         print()
-                        break
                     
                     if stock_resultante < 0:
                         print("Error: No hay suficiente stock")
