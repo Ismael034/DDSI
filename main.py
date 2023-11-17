@@ -61,11 +61,28 @@ def main():
                 try:
                     cpedido = int(input("Introduzca el código del pedido: "))
                     ccliente = int(input("Introduzca el código del cliente: "))
+                    while True:
+
+                        fecha = input(f"Introduzca la fecha del pedido [por def {datetime.datetime.now().date()}]: ")
+                        if fecha == "":
+                            fecha = datetime.datetime.now().date()
+                            break
+                        else:
+                            try:
+                                fecha = datetime.date.strftime(fecha,"%y-%m-%d")
+                                
+                                break
+                                
+                            except Exception as e:
+                                print_tables(q)
+                                print(e)
+                                print("Error: Fecha inválida\n")
+                        
                     break
                 except ValueError:
                     print("Error: Introduzca un número entero")
 
-            q.insert_pedido(cpedido, ccliente, datetime.datetime.now().date())
+            q.insert_pedido(cpedido, ccliente, fecha)
 
             pedido_savepoint = "pedido_insertado"
             db.savepoint(pedido_savepoint)
@@ -93,12 +110,18 @@ def main():
                     try:
                         stock_resultante = cantidad_stock[0] - cantidad
                     except TypeError:
-                        print("Error: No existe el producto")
+                        print_tables(q)
                         print()
-                    
+                        print("Error: No existe el producto\n")
+                        show_sub_menu = True
+                        continue
+
                     if stock_resultante < 0:
-                        print("Error: No hay suficiente stock")
+                        print_tables(q)
                         print()
+                        print("Error: No hay suficiente stock\n")
+                        show_sub_menu = True
+                        continue
                     else:
                         q.insert_detalle_pedido(cpedido, cproducto, cantidad, pedido_savepoint)
                         q.update_stock(cproducto, stock_resultante, pedido_savepoint)
