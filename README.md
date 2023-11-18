@@ -15,14 +15,16 @@ pip3 install -r requirements.txt
 sudo apt install libmariadb3 libmariadb-dev
 ```
 
-Se deberá crear un fichero `connection.txt` con el usuario y contraseña de la base de datos separados por una línea
+Se deberá modificar el fichero `config.json` y el fichero `docker-compose.yml` con los datos para la conexión a la base de datos
+
+Una vez los datos sean correctos, iniciar el contenedor de docker ejecutando
 
 ```
-x12345678
-x12345678
+sudo docker-compose up -d
 ```
 
-Una vez creado, ejecutar con
+y ejecutar el programa con
+
 ```
-python3 main.py
+python3 swad_it.py
 ```
