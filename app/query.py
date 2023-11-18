@@ -6,7 +6,7 @@ class query:
 
     def get_tables(self):
         try:
-            self.db.execute("SELECT table_name FROM user_tables")
+            self.db.execute("SELECT table_name FROM information_schema.tables WHERE table_schema = DATABASE()")
             return self.db.fetchall()
         except Exception as ex:
             print("Error getting tables: ", ex)
@@ -89,7 +89,7 @@ class query:
 
     def insert_pedido(self, cpedido, ccliente, fecha_pedido):
         try:
-            self.db.execute(f"INSERT INTO Pedido VALUES ({cpedido}, {ccliente}, TO_DATE('{fecha_pedido}', 'YYYY-MM-DD'))")
+            self.db.execute(f"INSERT INTO Pedido VALUES ({cpedido}, {ccliente}, STR_TO_DATE('{fecha_pedido}', '%Y-%m-%d'))")
         except Exception as ex:
             print("Error inserting pedido: ", ex)
             self.db.rollback()

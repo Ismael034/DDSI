@@ -12,6 +12,7 @@ Para ejecutar el seminario se debe de instalar previamente el [driver odbc de De
 
 ```
 pip3 install -r requirements.txt
+sudo apt install libmariadb3 libmariadb-dev
 ```
 
 Se deberá crear un fichero `connection.txt` con el usuario y contraseña de la base de datos separados por una línea

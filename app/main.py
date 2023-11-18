@@ -1,5 +1,5 @@
-import query
-import database
+import app.query as query
+import app.database as database
 import random
 import datetime
 from tabulate import tabulate
@@ -49,6 +49,7 @@ def main():
                         break
 
                 db.commit()
+                print_tables(q)
             show_menu = True
             
         elif menu_entry_index == 1:
@@ -63,19 +64,17 @@ def main():
                     ccliente = int(input("Introduzca el código del cliente: "))
                     while True:
 
-                        fecha = input(f"Introduzca la fecha del pedido [por def {datetime.datetime.now().date()}]: ")
+                        fecha = input(f"Introduzca la fecha del pedido [{datetime.datetime.now().date()}]: ")
                         if fecha == "":
                             fecha = datetime.datetime.now().date()
                             break
                         else:
                             try:
-                                fecha = datetime.date.strftime(fecha,"%y-%m-%d")
-                                
+                                fecha = datetime.datetime.strptime(fecha, "%Y-%m-%d").date()
                                 break
                                 
                             except Exception as e:
                                 print_tables(q)
-                                print(e)
                                 print("Error: Fecha inválida\n")
                         
                     break

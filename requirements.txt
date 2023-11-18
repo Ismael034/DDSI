@@ -1,3 +1,5 @@
 pyodbc
 simple-term-menu
 tabulate
+flask
+mariadb

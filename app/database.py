@@ -1,29 +1,37 @@
-import pyodbc
-
+import mariadb
+import json
 class database:
     def __init__(self):
         self.id_user = ""
         self.password = ""
+        self.host = ""
+        self.port = 0
+        self.database = ""
+
         self.connection = None
         self.cursor = None
 
     def connect(self):
         try:
-            with open("connection.txt", "r") as f:
-                self.id_user = f.readline().strip()
-                self.password = f.readline().strip()
+            with open("config.json", "r") as f:
+                config = json.load(f)
+                self.id_user = config["database_user"]
+                self.password = config["database_password"]
+                self.host = config["database_host"]
+                self.port = config["database_port"]
+                self.database = config["database_db"]
 
-                self.connection = pyodbc.connect(
-                    'Driver={Devart ODBC Driver for Oracle};'
-                    'Direct=True;'
-                    'Host=oracle0.ugr.es;'
-                    'Service Name=practbd.oracle0.ugr.es;'
-                    f'User ID={self.id_user};'
-                    f'Password={self.password};')
+                self.connection = mariadb.connect(
+                    user=self.id_user,
+                    password=self.password,
+                    host=self.host,
+                    port=self.port,
+                    database=self.database
+                )
 
                 self.cursor = self.connection.cursor()
 
-        except pyodbc.Error as ex:
+        except mariadb.Error as ex:
             print("Error: ", ex)
             exit()
 
