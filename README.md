@@ -8,11 +8,18 @@ Participantes:
 
 ### Instalación y ejecución
 
-Para ejecutar el seminario se debe de instalar previamente el [driver odbc de Devart](https://www.devart.com/odbc/oracle/). Tener python y pip instalado e instalar las bibliotecas de python ejecutando
+Para ejecutar el seminario se debe tener python y pip instalado e instalar las bibliotecas de python ejecutando
 
 ```
 pip3 install -r requirements.txt
+```
+
+Será necesario instalar algunas dependencias adicionales
+
+```
 sudo apt install libmariadb3 libmariadb-dev
+
+sudo dnf install libmariadb3 libmariadb-devel
 ```
 
 Se deberá modificar el fichero `config.json` y el fichero `docker-compose.yml` con los datos para la conexión a la base de datos
