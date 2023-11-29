@@ -101,6 +101,13 @@ class query:
         except Exception as ex:
             print("Error getting stock: ", ex)
 
+    def get_stock_by_id(self, cproducto):
+        try:
+            self.db.execute(f"SELECT * FROM Stock WHERE cproducto = {cproducto}")
+            return self.db.fetchone()
+        except Exception as ex:
+            print("Error getting stock: ", ex)
+
     def update_stock(self, cproducto, cantidad, savepoint):
         try:
             self.db.execute(f"UPDATE Stock SET cantidad = {cantidad} WHERE cproducto = {cproducto}")
