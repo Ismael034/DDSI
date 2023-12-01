@@ -1,5 +1,5 @@
 ---
-version: "2.1"
+version: "3.8"
 services:
   mariadb:
     image: lscr.io/linuxserver/mariadb:latest
@@ -13,7 +13,26 @@ services:
       - MYSQL_USER=admin
       - MYSQL_PASSWORD=admin
     volumes:
-      - ./config:/config
+      - mariadb:/config
     ports:
       - 3306:3306
-    restart: unless-stopped
+    networks:
+      - swad
+
+  cloudbeaver:
+      image: dbeaver/cloudbeaver:latest
+      container_name: cloudbeaver
+      ports:
+       - 8080:8978
+      volumes:
+       - cloudbeaver:/opt/cloudbeaver/workspace
+      networks:
+       - swad
+networks:
+  swad:
+    name: swad_it
+    driver: bridge
+
+volumes:
+  cloudbeaver:
+  mariadb:

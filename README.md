@@ -35,3 +35,13 @@ y ejecutar el programa con
 ```
 python3 swad_it.py
 ```
+
+## Cloudbeaver
+
+Para poder acceder a la base de datos de una manera sencilla, se incluye en el archivo `docker-compose.yml` un gestor de base de datos. Para acceder, ir al navegador a la url [http://127.0.0.1:8080/#/](http://127.0.0.1:8080/#/). Al iniciar la primera conexión con la base de datos, seleccionar `MariaDB` como sistema gestor y introducir los siguientes datos en los campos:
+
+- Host: `mariadb`
+- Port: `3306`
+- Database: `swad`
+- User name: `root`
+- Password: `acanas23`
