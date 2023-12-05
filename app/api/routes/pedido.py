@@ -1,32 +1,54 @@
 import json
-from flask import Flask, request, jsonify, Blueprint
+from flask import request, jsonify, Blueprint
+import app.query as query
+import app.database as database
 
 pedido = Blueprint('pedido', __name__)
-
-@pedido.route('/pedido', methods=['GET'])
-def query_records():
-    name = request.args.get('name')
-    with open('/tmp/data.txt', 'r') as f:
-        data = f.read()
-        records = json.loads(data)
-        for record in records:
-            if record['name'] == name:
-                return jsonify(record)
-        return jsonify({'error': 'data not found'})
+db = database.database()
+q = query.query(db)
 
 
-@pedido.route('/', methods=['POST'])
-def update_record():
-    record = json.loads(request.data)
-    new_records = []
-    with open('/tmp/data.txt', 'r') as f:
-        data = f.read()
-        records = json.loads(data)
-    for r in records:
-        if r['name'] == record['name']:
-            r['email'] = record['email']
-        new_records.append(r)
-    with open('/tmp/data.txt', 'w') as f:
-        f.write(json.dumps(new_records, indent=2))
-    return jsonify(record)
+@pedido.route('/pedido/', methods=['GET'])
+def query_pedido():
+    result = q.get_pedido()
+    return jsonify(result)
+
+
+@pedido.route('/pedido/<cpedido>', methods=['GET'])
+def query_pedido_by_id(cpedido):
+    result = q.get_pedido_by_id(cpedido)
+    return jsonify(result)
+
+
+@pedido.route('/pedido/', methods=['POST'])
+def create_pedido():
+    try:
+        record = json.loads(request.data)
+        pedido = q.get_pedido_by_id(record['cpedido'])
+        
+        if pedido is None:
+            result = q.insert_pedido(record['producto'], record['cantidad'])
+            return jsonify(result)
+        else:
+            result = q.update_stock(record['producto'], record['cantidad'])
+            return jsonify(result)
+    except Exception as ex:
+        print("Error updating pedido: ", ex)
+        return jsonify({'error': 'error updating pedido'})
     
+
+@pedido.route('/pedido/<cpedido>', methods=['UPDATE'])
+def update_pedido_by_id(cpedido):
+    try:
+        record = json.loads(request.data)
+        pedido = q.get_pedido_by_id(cpedido)
+        
+        if pedido is None:
+            result = q.insert_pedido(record['producto'], record['cantidad'])
+            return jsonify(result)
+        else:
+            result = q.update_stock(record['producto'], record['cantidad'])
+            return jsonify(result)
+    except Exception as ex:
+        print("Error updating pedido: ", ex)
+        return jsonify({'error': 'error updating pedido'})

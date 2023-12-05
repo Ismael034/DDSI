@@ -2,7 +2,7 @@ class query:
     def __init__(self, database):
         self.db = database
         self.db.connect()
-        
+        self.db.rollback()     
 
     def get_tables(self):
         try:
@@ -13,9 +13,9 @@ class query:
 
     def delete_tables(self):
         try:
+            self.db.execute("DROP TABLE Detalle_Pedido")
             self.db.execute("DROP TABLE Stock")
             self.db.execute("DROP TABLE Pedido")
-            self.db.execute("DROP TABLE Detalle_Pedido")
             self.db.commit()
         
         except Exception as ex:
@@ -142,8 +142,14 @@ class query:
             return self.db.fetchall()
         except Exception as ex:
             print("Error getting detalle: ", ex)
-            
 
+    def get_detalle_pedido_by_id(self, cpedido):
+        try:
+            self.db.execute(f"SELECT * FROM Detalle_Pedido WHERE cpedido = {cpedido}")
+            return self.db.fetchall()
+        except Exception as ex:
+            print("Error getting detalle: ", ex)
+            
     def delete_detalle_pedido(self, cpedido):
         try:
             self.db.execute(f"DELETE FROM Detalle_Pedido WHERE cpedido = {cpedido}")
