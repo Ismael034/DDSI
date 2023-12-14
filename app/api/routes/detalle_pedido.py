@@ -18,18 +18,44 @@ def query_detalle_pedido_by_id(cpedido):
     result = q.get_detalle_pedido_by_id(cpedido)
     return jsonify(result)
 
-@detalle_pedido.route('/detalle_pedido/', methods=['POST'])
-def insert_detalle_pedido():
+@detalle_pedido.route('/detalle_pedido/<cpedido>', methods=['POST'])
+def insert_detalle_pedido(cpedido):
     try:
         record = json.loads(request.data)
-        detalle_pedido = q.get_detalle_pedido_by_id(record['cpedido'])
-        
-        if detalle_pedido is None:
-            result = q.insert_detalle_pedido(record['cpedido'], record['cproducto'], record['cantidad'])
-            return jsonify(result)
-        else:
-            result = q.update_detalle_pedido(record['cpedido'], record['cproducto'], record['cantidad'])
-            return jsonify(result)
+
+        cproducto = record['cproducto']
+        cantidad = record['cantidad']
+
+        # Check values are valid
+        if not isinstance(cpedido, int) or not isinstance(cproducto, int) or not isinstance(cantidad, int):
+            return jsonify({'error': 'invalid values'}), 400
+
+        # Check if pedido exists
+        pedido = q.get_pedido_by_id(cpedido)
+        if pedido is None:
+            return jsonify({'error': 'pedido does not exist'}), 400
+
+        # Check if producto exists
+        producto = q.get_producto_by_id(cproducto)
+        if producto is None:
+            return jsonify({'error': 'producto does not exist'}), 400
+
+        # Check if producto is in stock
+        if producto['stock'] < cantidad:
+            return jsonify({'error': 'not enough stock'}), 400
+
+        # Check if producto is already in pedido
+        detalle_pedido = q.get_detalle_pedido_by_id(cpedido)
+        if detalle_pedido is not None:
+            return jsonify({'error': 'producto already in pedido'}), 400
+
+        # Insert detalle pedido and update stock
+        q.insert_detalle_pedido(cpedido, cproducto, cantidad)
+        q.update_stock(cproducto, cantidad)
+
+        result = q.get_detalle_pedido_by_id(cpedido)
+        return jsonify(result)
+
     except Exception as ex:
         print("Error insering detalle pedido: ", ex)
         return jsonify({'error': 'error inserting detalle pedido'})
