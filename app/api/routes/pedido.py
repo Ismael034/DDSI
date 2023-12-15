@@ -2,6 +2,7 @@ import json
 from flask import request, jsonify, Blueprint
 import app.query as query
 import app.database as database
+import datetime
 
 pedido = Blueprint('pedido', __name__)
 db = database.database()
@@ -27,6 +28,8 @@ def create_pedido():
         ccliente = record['ccliente']
         fecha_pedido = record['fecha_pedido']
 
+        print(ccliente, fecha_pedido)
+
         # Check values are valid
         if not isinstance(ccliente, int) or not isinstance(fecha_pedido, str):
             return jsonify({'error': 'invalid values'}), 400
@@ -34,17 +37,20 @@ def create_pedido():
         try:
             fecha_pedido = datetime.datetime.strptime(fecha_pedido, "%Y-%m-%d").date()            
         except Exception as e:
+            print("Error parsing date: ", e)
             return jsonify({'error': 'invalid date'}), 400
 
         
-        q.insert_pedido(record['producto'], record['cantidad'])
+        q.insert_pedido(ccliente, fecha_pedido)
+        db.commit()
+        
         result = jsonify({'message': 'pedido creado'})
 
-        return jsonify(result)
+        return result
 
     except Exception as ex:
-        print("Error updating pedido: ", ex)
-        return jsonify({'error': 'error updating pedido'})
+        print("Error creating pedido: ", ex)
+        return jsonify({'error': 'error creating pedido'})
         
 
 @pedido.route('/pedido/<cpedido>/update', methods=['POST'])

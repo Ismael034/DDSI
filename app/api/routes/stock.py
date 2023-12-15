@@ -26,16 +26,34 @@ def query_stock_by_id(cproducto):
 def insert_stock():
     try:
         record = json.loads(request.data)
-        stock = q.get_stock_by_id(record['producto'])
+
+        cproducto = record['producto']
+        cantidad = record['cantidad']
+
+        # Check values are valid
+        if not isinstance(cproducto, int) or not isinstance(cantidad, int):
+            return jsonify({'error': 'invalid values'}), 400
+
         
+        stock = q.get_stock_by_id(cproducto)
+    
         if stock is None:
-            result = q.insert_stock(record['producto'], record['cantidad'])
+            q.insert_stock(cproducto, cantidad)
+            db.commit()
+
+            result = jsonify({'message': 'stock creado'})
             return jsonify(result)
         else:
-            result = q.update_stock(record['producto'], record['cantidad'])
+            if cantidad < 0 or stock['cantidad'] - cantidad < 0:
+                return jsonify({'error': 'invalid value cantidad'}), 400
+
+            cantidad = stock['cantidad'] - cantidad
+            result = q.update_stock(cproducto, cantidad)
+            db.commit()
             return jsonify(result)
+            
     except Exception as ex:
-        print("Error updating stock: ", ex)
+        print("Error creating stock: ", ex)
         return jsonify({'error': 'error updating stock'})
     
 @stock.route('/stock/<cproducto>', methods=['UPDATE'])

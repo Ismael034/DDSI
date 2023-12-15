@@ -35,7 +35,7 @@ class query:
     def create_table_stock(self):
         try:
             self.db.execute("CREATE TABLE Stock ("
-                            "Cproducto INTEGER PRIMARY KEY,"
+                            "Cproducto INTEGER PRIMARY KEY AUTO_INCREMENT,"
                             "Cantidad INTEGER)")
         
         except Exception as ex:
@@ -77,9 +77,9 @@ class query:
             self.db.rollback()
             return False
 
-    def insert_stock(self, cproducto, cantidad):
+    def insert_stock(self, cantidad):
         try:
-            self.db.execute(f"INSERT INTO Stock VALUES ({cproducto}, {cantidad})")
+            self.db.execute(f"INSERT INTO Stock(Cantidad) VALUES ({cantidad})")
             self.db.commit()
             return True
         except Exception as ex:
@@ -87,9 +87,9 @@ class query:
             self.db.rollback()
             return False
 
-    def insert_pedido(self, cpedido, ccliente, fecha_pedido):
+    def insert_pedido(self, ccliente, fecha_pedido):
         try:
-            self.db.execute(f"INSERT INTO Pedido VALUES ({ccliente}, STR_TO_DATE('{fecha_pedido}', '%Y-%m-%d'))")
+            self.db.execute(f"INSERT INTO Pedido(Ccliente, Fecha_pedido) VALUES ({ccliente}, STR_TO_DATE('{fecha_pedido}', '%Y-%m-%d'))")
         except Exception as ex:
             print("Error inserting pedido: ", ex)
             self.db.rollback()

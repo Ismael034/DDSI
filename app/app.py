@@ -18,7 +18,7 @@ app.register_blueprint(pedido)
 app.register_blueprint(stock)
 
 # Check if tables are generated
-helpers.check_init_tables(q)
+helpers.check_init_tables(q, db)
 
 
 def run():
