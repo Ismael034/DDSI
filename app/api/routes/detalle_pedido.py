@@ -17,6 +17,7 @@ def query_detalle_pedido():
 def query_detalle_pedido_by_id(cpedido):    
     result = q.get_detalle_pedido_by_id(cpedido)
     return jsonify(result)
+    
 
 @detalle_pedido.route('/detalle_pedido/<cpedido>', methods=['POST'])
 def insert_detalle_pedido(cpedido):
@@ -59,3 +60,20 @@ def insert_detalle_pedido(cpedido):
     except Exception as ex:
         print("Error insering detalle pedido: ", ex)
         return jsonify({'error': 'error inserting detalle pedido'})
+
+
+@detalle_pedido.route('/detalle_pedido/<cpedido>/delete', methods=['POST'])
+def delete_detalle_pedido(cpedido):
+    try:
+        # Check if pedido exists
+        pedido = q.get_pedido_by_id(cpedido)
+        if pedido is None:
+            return jsonify({'error': 'pedido does not exist'}), 400
+
+        q.delete_detalle_pedido(cpedido);
+        return jsonify({'success': 'detalle pedido deleted'})
+
+
+    except Exception as ex:
+        print("Error deleting detalle pedido: ", ex)
+        return jsonify({'error': 'error deleting detalle pedido'})

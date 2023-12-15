@@ -24,16 +24,28 @@ def query_pedido_by_id(cpedido):
 def create_pedido():
     try:
         record = json.loads(request.data)
-        pedido = q.get_pedido_by_id(record['cpedido'])
+        ccliente = record['ccliente']
+        fecha_pedido = record['fecha_pedido']
+
+        # Check values are valid
+        if not isinstance(ccliente, int) or not isinstance(fecha_pedido, str):
+            return jsonify({'error': 'invalid values'}), 400
+
+        try:
+            fecha_pedido = datetime.datetime.strptime(fecha_pedido, "%Y-%m-%d").date()            
+        except Exception as e:
+            return jsonify({'error': 'invalid date'}), 400
+
         
-        if pedido is None:
-            result = q.insert_pedido(record['producto'], record['cantidad'])
-            return jsonify(result)
-        else:
-            return jsonify({'error': 'pedido already exists'}), 400
+        q.insert_pedido(record['producto'], record['cantidad'])
+        result = jsonify({'message': 'pedido creado'})
+
+        return jsonify(result)
+
     except Exception as ex:
         print("Error updating pedido: ", ex)
         return jsonify({'error': 'error updating pedido'})
+        
 
 @pedido.route('/pedido/<cpedido>/update', methods=['POST'])
 def update_pedido():
@@ -49,6 +61,7 @@ def update_pedido():
     except Exception as ex:
         print("Error updating pedido: ", ex)
         return jsonify({'error': 'error updating pedido'})
+
 
 @pedido.route('/pedido/<cpedido>/delete', methods=['POST'])
 def delete_pedido_by_id(cpedido):

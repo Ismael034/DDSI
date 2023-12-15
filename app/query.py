@@ -87,7 +87,7 @@ class query:
             self.db.rollback()
             return False
 
-    def insert_pedido(self, ccliente, fecha_pedido):
+    def insert_pedido(self, cpedido, ccliente, fecha_pedido):
         try:
             self.db.execute(f"INSERT INTO Pedido VALUES ({ccliente}, STR_TO_DATE('{fecha_pedido}', '%Y-%m-%d'))")
         except Exception as ex:
