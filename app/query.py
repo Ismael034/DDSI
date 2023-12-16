@@ -108,12 +108,11 @@ class query:
         except Exception as ex:
             print("Error getting stock: ", ex)
 
-    def update_stock(self, cproducto, cantidad, savepoint):
+    def update_stock(self, cproducto, cantidad):
         try:
             self.db.execute(f"UPDATE Stock SET cantidad = {cantidad} WHERE cproducto = {cproducto}")
         except Exception as ex:
             print("Error updating stock: ", ex)
-            self.db.rollback_to_savepoint(savepoint)
 
     def get_cantidad_stock(self, cproducto):
         try:

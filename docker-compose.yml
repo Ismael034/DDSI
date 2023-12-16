@@ -19,6 +19,11 @@ services:
     networks:
       - swad
 
+    healthcheck:
+      test: ["CMD", 'mysqladmin', 'ping', '-h', 'localhost', '-u', 'root', '-pacanas23' ] 
+      interval: 1s
+      retries: 5
+
   cloudbeaver:
       image: dbeaver/cloudbeaver:latest
       container_name: cloudbeaver
@@ -28,6 +33,20 @@ services:
        - cloudbeaver:/opt/cloudbeaver/workspace
       networks:
        - swad
+
+  swad:
+    build: .
+    container_name: swad
+    ports:
+      - 5000:5000
+    networks:
+      - swad
+    depends_on:
+      mariadb:
+        condition: service_healthy
+
+
+
 networks:
   swad:
     name: swad_it

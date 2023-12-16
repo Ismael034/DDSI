@@ -1,5 +1,5 @@
 {
-    "database_host": "0.0.0.0",
+    "database_host": "mariadb",
     "database_port": 3306,
     "database_db": "swad",
     "database_user": "admin",

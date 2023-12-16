@@ -27,56 +27,64 @@ def insert_stock():
     try:
         record = json.loads(request.data)
 
-        cproducto = record['producto']
+        cantidad = record['cantidad']
+
+        # Check values are valid
+        if not isinstance(cantidad, int):
+            return jsonify({'error': 'invalid values'}), 400
+        
+        q.insert_stock(cantidad)
+        db.commit()
+
+        result = jsonify({'message': 'stock creado'})
+        return result
+          
+    except Exception as ex:
+        print("Error creating stock: ", ex)
+        return jsonify({'error': 'error updating stock'})
+
+
+    
+@stock.route('/stock/<cproducto>/update', methods=['POST'])
+def update_stock_by_id(cproducto):
+    try:
+
         cantidad = record['cantidad']
 
         # Check values are valid
         if not isinstance(cproducto, int) or not isinstance(cantidad, int):
             return jsonify({'error': 'invalid values'}), 400
 
-        
-        stock = q.get_stock_by_id(cproducto)
-    
-        if stock is None:
-            q.insert_stock(cproducto, cantidad)
-            db.commit()
-
-            result = jsonify({'message': 'stock creado'})
-            return jsonify(result)
-        else:
-            if cantidad < 0 or stock['cantidad'] - cantidad < 0:
-                return jsonify({'error': 'invalid value cantidad'}), 400
-
-            cantidad = stock['cantidad'] - cantidad
-            result = q.update_stock(cproducto, cantidad)
-            db.commit()
-            return jsonify(result)
-            
-    except Exception as ex:
-        print("Error creating stock: ", ex)
-        return jsonify({'error': 'error updating stock'})
-    
-@stock.route('/stock/<cproducto>', methods=['UPDATE'])
-def update_stock_by_id(cproducto):
-    try:
         record = json.loads(request.data)
         stock = q.get_stock_by_id(cproducto)
         
-        if stock is None:
-            result = q.insert_stock(record['producto'], record['cantidad'])
-            return jsonify(result)
-        else:
-            result = q.update_stock(record['producto'], record['cantidad'])
-            return jsonify(result)
+        if cantidad < 0 or stock['cantidad'] - cantidad < 0:
+            return jsonify({'error': 'invalid value cantidad'}), 400
+
+        cantidad = stock['cantidad'] - cantidad
+        q.update_stock(cproducto, cantidad)
+        db.commit()
+
+        result = jsonify({'message': 'stock actualizado'})
+        return result
+
     except Exception as ex:
         print("Error updating stock: ", ex)
         return jsonify({'error': 'error updating stock'})
+
+
     
-@stock.route('/stock/<cproducto>', methods=['DELETE'])
+@stock.route('/stock/<cproducto>/delete', methods=['POST'])
 def delete_stock_by_id(cproducto):
     try:
-        result = q.delete_stock(cproducto)
-        return jsonify(result)
+        if not isinstance(cproducto, int):
+            return jsonify({'error': 'invalid values'}), 400
+
+        q.delete_stock(cproducto)
+        db.commit()
+        
+        result = jsonify({'message': 'stock eliminado'})
+        return result
     except Exception as ex:
         print("Error deleting stock: ", ex)
         return jsonify({'error': 'error deleting stock'})

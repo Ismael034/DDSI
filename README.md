@@ -14,12 +14,12 @@ Para ejecutar el seminario se debe tener python y pip instalado e instalar las b
 pip3 install -r requirements.txt
 ```
 
-Será necesario instalar algunas dependencias adicionales
+Será necesario instalar algunas dependencias adicionales y docker
 
 ```
-sudo apt install libmariadb3 libmariadb-dev
+sudo apt install libmariadb3 libmariadb-dev docker docker-compose
 
-sudo dnf install libmariadb3 libmariadb-devel
+sudo dnf install libmariadb3 libmariadb-devel docker docker-compose
 ```
 
 Se deberá modificar el fichero `config.json` y el fichero `docker-compose.yml` con los datos para la conexión a la base de datos
