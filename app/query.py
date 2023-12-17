@@ -181,25 +181,27 @@ class query:
         except Exception as ex:
             print("Error getting detalle: ", ex)
 
-    def get_detalle_pedido_by_id(self, cpedido):
+    def get_detalle_pedido_by_id(self, cpedido, cproducto):
         try:
-            self.db.execute(f"SELECT * FROM Detalle_Pedido WHERE cpedido = {cpedido}")
-            return self.db.fetchall()
+            self.db.execute(f"SELECT * FROM Detalle_Pedido WHERE cpedido = {cpedido} AND cproducto = {cproducto}")
+            return self.db.fetchone()
         except Exception as ex:
             print("Error getting detalle: ", ex)
             
-    def delete_detalle_pedido(self, cpedido):
+    def delete_detalle_pedido(self, cpedido, cproducto):
         try:
-            self.db.execute(f"DELETE FROM Detalle_Pedido WHERE cpedido = {cpedido}")
+            self.db.execute(f"DELETE FROM Detalle_Pedido WHERE cpedido = {cpedido} AND cproducto = {cproducto}")
+            self.db.commit()
         except Exception as ex:
-            print("Error deleting detalle: ", ex)
+            print("Error deleting detalle pedido: ", ex)
             self.db.rollback()
 
-    def insert_detalle_pedido(self, cpedido, cproducto, cantidad, savepoint):
+    def insert_detalle_pedido(self, cpedido, cproducto, cantidad):
         try:
             self.db.execute(f"INSERT INTO Detalle_Pedido VALUES ({cpedido}, {cproducto}, {cantidad})")
+            self.db.commit()
         except Exception as ex:
             print("Error inserting detalle pedido: ", ex)
-            self.db.rollback_to_savepoint(savepoint)
+            self.db.rollback()
 
      
