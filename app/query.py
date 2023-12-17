@@ -164,6 +164,13 @@ class query:
             self.db.rollback()
 
 
+    def update_pedido(self, cpedido, ccliente, fecha_pedido):
+        try:
+            self.db.execute(f"UPDATE Pedido SET ccliente = {ccliente}, fecha_pedido = STR_TO_DATE('{fecha_pedido}', '%Y-%m-%d') WHERE cpedido = {cpedido}")
+            self.db.commit()
+        except Exception as ex:
+            print("Error updating pedido: ", ex)
+            self.db.rollback()
 
 
 

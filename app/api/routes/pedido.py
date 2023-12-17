@@ -58,7 +58,7 @@ def update_pedido(cpedido):
         pedido = q.get_pedido_by_id(cpedido)
         
         if pedido is not None:
-            result = q.insert_pedido(record['producto'], record['cantidad'])
+            result = q.update_pedido(cpedido, record['ccliente'], record['fecha_pedido'])
             return_value = q.get_pedido_by_id(pedido)
             return jsonify(return_value)
             
