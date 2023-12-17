@@ -54,16 +54,18 @@ def create_pedido():
         
 
 @pedido.route('/pedido/<cpedido>/update', methods=['POST'])
-def update_pedido():
+def update_pedido(cpedido):
     try:
         record = json.loads(request.data)
-        pedido = q.get_pedido_by_id(record['cpedido'])
+        pedido = q.get_pedido_by_id(cpedido)
         
-        if pedido is None:
+        if pedido is not None:
             result = q.insert_pedido(record['producto'], record['cantidad'])
-            return jsonify(result)
+            return_value = q.get_pedido_by_id(pedido)
+            return jsonify(return_value)
+            
         else:
-            return jsonify({'error': 'pedido already exists'}), 400
+            return jsonify({'error': 'pedido does not exists'}), 400
     except Exception as ex:
         print("Error updating pedido: ", ex)
         return jsonify({'error': 'error updating pedido'})
@@ -85,5 +87,5 @@ def delete_pedido_by_id(cpedido):
         else:
             return jsonify({'error': 'pedido does not exist'}), 400
     except Exception as ex:
-        print("Error deleting pedido: ", ex)
+        logging.error("Error deleting pedido: ", ex)
         return jsonify({'error': 'error deleting pedido'})
