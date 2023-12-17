@@ -1,5 +1,5 @@
 import json
-from flask import request, jsonify, Blueprint
+from flask import request, jsonify, Blueprint, current_app
 import app.query as query
 import app.database as database
 import datetime
@@ -28,8 +28,6 @@ def create_pedido():
         ccliente = record['ccliente']
         fecha_pedido = record['fecha_pedido']
 
-        print(ccliente, fecha_pedido)
-
         # Check values are valid
         if not isinstance(ccliente, int) or not isinstance(fecha_pedido, str):
             return jsonify({'error': 'invalid values'}), 400
@@ -37,7 +35,7 @@ def create_pedido():
         try:
             fecha_pedido = datetime.datetime.strptime(fecha_pedido, "%Y-%m-%d").date()            
         except Exception as e:
-            print("Error parsing date: ", e)
+            current_app.logger.debug("Error parsing date: ", e)
             return jsonify({'error': 'invalid date'}), 400
 
         
@@ -49,7 +47,7 @@ def create_pedido():
         return result
 
     except Exception as ex:
-        print("Error creating pedido: ", ex)
+        current_app.logger.debug("Error creating pedido: ", ex)
         return jsonify({'error': 'error creating pedido'})
         
 
@@ -67,7 +65,7 @@ def update_pedido(cpedido):
         else:
             return jsonify({'error': 'pedido does not exists'}), 400
     except Exception as ex:
-        print("Error updating pedido: ", ex)
+        current_app.logger.debug("Error updating pedido: ", ex)
         return jsonify({'error': 'error updating pedido'})
 
 
@@ -82,7 +80,7 @@ def delete_pedido_by_id(cpedido):
             detalle_pedido = q.get_detalle_pedido_by_id(cpedido)
             if detalle_pedido is not None:
                 q.delete_detalle_pedido(cpedido)
-
+    
             return jsonify({'message': 'pedido deleted'})
         else:
             return jsonify({'error': 'pedido does not exist'}), 400

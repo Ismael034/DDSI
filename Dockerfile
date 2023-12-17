@@ -6,4 +6,4 @@ RUN pip install -r requirements.txt
 
 EXPOSE 5000
 
-CMD ["gunicorn"  , "-b", "0.0.0.0:5000", "swad_it"]
+CMD ["gunicorn"  , "-b", "0.0.0.0:5000", "--log-level=debug", "swad_it"]
