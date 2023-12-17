@@ -58,7 +58,7 @@ def insert_detalle_pedido(cpedido):
         return jsonify(result)
 
     except Exception as ex:
-        print("Error insering detalle pedido: ", ex)
+        app.logger.debug("Error insering detalle pedido: ", ex)
         return jsonify({'error': 'error inserting detalle pedido'})
 
 
@@ -75,5 +75,5 @@ def delete_detalle_pedido(cpedido):
 
 
     except Exception as ex:
-        print("Error deleting detalle pedido: ", ex)
+        app.logger.debug("Error deleting detalle pedido: ", ex)
         return jsonify({'error': 'error deleting detalle pedido'})

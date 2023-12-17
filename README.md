@@ -30,11 +30,6 @@ Una vez los datos sean correctos, iniciar el contenedor de docker ejecutando
 sudo docker-compose up -d
 ```
 
-y ejecutar el programa con
-
-```
-python3 swad_it.py
-```
 
 ## Cloudbeaver
 
