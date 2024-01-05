@@ -1,4 +1,4 @@
-class query:
+class tienda:
     def __init__(self, database):
         self.db = database
         self.db.connect()
@@ -13,9 +13,9 @@ class query:
 
     def delete_tables(self):
         try:
-            self.db.execute("DROP TABLE Detalle_Pedido")
-            self.db.execute("DROP TABLE Stock")
-            self.db.execute("DROP TABLE Pedido")
+            self.db.execute("DROP TABLE Usuario")
+            self.db.execute("DROP TABLE Perfil")
+            self.db.execute("DROP TABLE Articulo")
             self.db.commit()
         
         except Exception as ex:
@@ -32,29 +32,36 @@ class query:
             self.db.rollback()
             return False
 
-    def create_table_stock(self):
+    def create_table_perfil(self):
         try:
-            self.db.execute("CREATE TABLE Stock ("
-                            "Cproducto INTEGER PRIMARY KEY AUTO_INCREMENT,"
-                            "Cantidad INTEGER)")
+            self.db.execute("CREATE TABLE Perfil ("
+                            "#Nombre_Usuario VARCHAR(20) PRIMARY KEY,"
+                            "Email VARCHAR(20),"
+                            "Fotografía BLOB,"
+                            "Biografía VARCHAR(300),"
+                            "Logros VARCHAR(300),"
+                            "Artículos_adquiridos VARCHAR(20)")
         
         except Exception as ex:
-            print("Error creating stock table: ", ex)
+            print("Error creating stock perfil: ", ex)
             self.db.rollback()
 
-    def create_table_pedido(self):
+
+ UsuarioRegistrado-AñadirSaldo(#Nombre_Usuario, Saldo, Nombre, Contraseña, Artículos_adquiridos)
+ 
+    def create_table_usuario(self):
         try:
-            self.db.execute("CREATE TABLE Pedido ("
-                            "Cpedido INTEGER PRIMARY KEY AUTO_INCREMENT,"
-                            "Ccliente INTEGER,"
+            self.db.execute("CREATE TABLE Usuario ("
+                            "#Nombre_Usuario VARCHAR(20) PRIMARY KEY,"
+                            "Saldo INTEGER,"
                             "Fecha_pedido DATE)")
         
         except Exception as ex:
-            print("Error creating pedido table:", ex)
+            print("Error creating usuario table:", ex)
 
-    def create_table_detalle_pedido(self):
+    def create_table_articulo(self):
         try:
-            self.db.execute("CREATE TABLE Detalle_Pedido ("
+            self.db.execute("CREATE TABLE Articulo ("
                             "Cpedido INTEGER,"
                             "Cproducto INTEGER,"
                             "Cantidad INTEGER CHECK (Cantidad > 0),"
@@ -62,14 +69,14 @@ class query:
                             "FOREIGN KEY (Cpedido) REFERENCES Pedido(Cpedido),"
                             "FOREIGN KEY (Cproducto) REFERENCES Stock(Cproducto))")
         except Exception as ex:
-            print("Error creating detalle table: ", ex)
+            print("Error creating articulo table: ", ex)
 
 
     def create_tables(self):
         try:
-            self.create_table_stock()
-            self.create_table_pedido()
-            self.create_table_detalle_pedido()
+            self.create_table_perfil()
+            self.create_table_usuario()
+            self.create_table_articulo()
             self.db.commit()
             return True
         except Exception as ex:

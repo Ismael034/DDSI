@@ -2,25 +2,20 @@ from flask import Flask
 import logging
 
 from app.api.config import Config
-from app.api.routes.detalle_pedido import detalle_pedido
-from app.api.routes.pedido import pedido
-from app.api.routes.stock import stock
+from app.api.routes.tienda.tienda import tienda
+from app.api.routes.social.social import social
+from app.api.routes.dev.dev import dev
+from app.api.routes.biblioteca.biblioteca import biblioteca
 from app.database import database
-from app.query import query
 from app.api.helpers import helpers
 
 app = Flask(__name__)
 app.config.from_object(Config)
 
-db = database()
-q = query(db)
-
-app.register_blueprint(detalle_pedido)
-app.register_blueprint(pedido)
-app.register_blueprint(stock)
-
-# Check if tables are generated
-helpers.check_init_tables(q, db)
+app.register_blueprint(tienda)
+app.register_blueprint(social)
+app.register_blueprint(biblioteca)
+app.register_blueprint(dev)
 
 gunicorn_logger = logging.getLogger('gunicorn.error')
 app.logger.handlers = gunicorn_logger.handlers

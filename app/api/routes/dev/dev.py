@@ -1,10 +1,10 @@
 import json
 import logging
-import app.query as query
+import app.query.dev as query
 import app.database as database
 from flask import request, jsonify, Blueprint, current_app
 
-stock = Blueprint('stock', __name__)
+stock = Blueprint('dev', __name__)
 db = database.database()
 q = query.query(db)
 
