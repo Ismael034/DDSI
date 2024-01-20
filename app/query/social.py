@@ -92,6 +92,7 @@ class social:
     def insert_usuario(self, nombre_usuario, nombre, password, saldo, articulos_adquiridos):
         try:
             self.db.execute(f"INSERT INTO Usuario VALUES ('{nombre_usuario}', {saldo}, '{nombre}', '{password}', '{articulos_adquiridos}')")
+            self.db.commit()
             return True
         except Exception as ex:
             logging.error("Error inserting usuario: ", ex)

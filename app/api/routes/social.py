@@ -42,18 +42,13 @@ def create_usuario():
 def update_usuario(usuario):
     try:
         record = json.loads(request.data)
-        pedido = q.get_pedido_by_id(cpedido)
-        
-        if pedido is not None:
-            result = q.update_pedido(cpedido, record['ccliente'], record['fecha_pedido'])
-            return_value = q.get_pedido_by_id(pedido)
-            return jsonify(return_value)
-            
-        else:
-            return jsonify({'error': 'pedido does not exists'}), 400
-    except Exception as ex:
-        current_app.logger.debug("Error updating pedido: ", ex)
-        return jsonify({'error': 'error updating pedido'})
+        nombre = record['nombre']
+        password = record['password']
+        articulos_adquiridos = record['articulos_adquiridos']
+
+        # Check values are valid
+        if not isinstance(nombre, str) or not isinstance(password, str) or not isinstance(articulos_adquiridos, str):
+            return jsonify({'error': 'invalid values'}), 400
 
 
 @social.route('/user/<cpedido>/delete', methods=['POST'])
