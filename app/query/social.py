@@ -1,3 +1,5 @@
+import logging
+
 class social:
     def __init__(self, database):
         self.db = database
@@ -12,7 +14,7 @@ class social:
             self.db.commit()
         
         except Exception as ex:
-            print("Error deleting table: ", ex)
+            logging.error("Error deleting table: ", ex)
             self.db.rollback()
 
     def delete_table(self, name):
@@ -21,7 +23,7 @@ class social:
             return True
         
         except Exception as ex:
-            print("Error deleting table: ", ex)
+            logging.error("Error deleting table: ", ex)
             self.db.rollback()
             return False
 
@@ -33,7 +35,7 @@ class social:
             self.db.commit()
             return True
         except Exception as ex:
-            print("Error creating tables: ", ex)
+            logging.error("Error creating tables: ", ex)
             self.db.rollback()
             return False
   
@@ -45,26 +47,24 @@ class social:
                             "Saldo INTEGER,"
                             "Nombre VARCHAR(20),"
                             "Password VARCHAR(100),"
-                            "Artículos_adquiridos VARCHAR(20))")
+                            "Articulos_adquiridos VARCHAR(20))")
         
         except Exception as ex:
-            print("Error creating usuario table:", ex)
+            logging.error("Error creating usuario table:", ex)
 
     def create_table_perfil(self):
         try:
             self.db.execute("CREATE TABLE Perfil ("
                             "Nombre_Usuario VARCHAR(20),"
                             "Email VARCHAR(20),"
-                            "Fotografía BLOB,"
-                            "Biografía VARCHAR(300),"
+                            "Fotografia BLOB,"
+                            "Biografia VARCHAR(300),"
                             "Logros VARCHAR(300),"
-                            "Artículos_adquiridos VARCHAR(20)",
-                            "FOREIGN KEY (Nombre_Usuario) REFERENCES Usuario(Nombre_Usuario)",
-                            "FOREIGN KEY (Artículos_adquiridos) REFERENCES Usuario(Artículos_adquiridos)",
-                            "PRIMARY KEY (Nombre_Usuario, Email)")
+                            "FOREIGN KEY (Nombre_Usuario) REFERENCES Usuario(Nombre_Usuario),"
+                            "PRIMARY KEY (Nombre_Usuario, Email))")
         
         except Exception as ex:
-            print("Error creating stock perfil: ", ex)
+            logging.error("Error creating perfil: ", ex)
             self.db.rollback()
 
     def create_table_amistad(self):
@@ -76,7 +76,7 @@ class social:
                             "FOREIGN KEY (Nombre_Usuario) REFERENCES Usuario(Nombre_Usuario),"
                             "FOREIGN KEY (Amigo) REFERENCES Usuario(Nombre_Usuario))")
         except Exception as ex:
-            print("Error creating articulo table: ", ex)
+            logging.error("Error creating articulo table: ", ex)
 
 
 
@@ -87,15 +87,14 @@ class social:
             self.db.execute(f"SELECT * FROM Usuario WHERE Nombre_Usuario = '{nombre_usuario}'")
             return self.db.fetchone()
         except Exception as ex:
-            print("Error getting usuario: ", ex)
+            logging.error("Error getting usuario: ", ex)
 
-    def insert_usuario(self, nombre_usuario, nombre, password):
+    def insert_usuario(self, nombre_usuario, nombre, password, saldo, articulos_adquiridos):
         try:
-            self.db.execute(f"INSERT INTO Usuario VALUES ('{nombre_usuario}', 0,"
-                            "'{nombre}', '{password}', '')")
+            self.db.execute(f"INSERT INTO Usuario VALUES ('{nombre_usuario}', {saldo}, '{nombre}', '{password}', '{articulos_adquiridos}')")
             return True
         except Exception as ex:
-            print("Error inserting stock: ", ex)
+            logging.error("Error inserting usuario: ", ex)
             self.db.rollback()
             return False
     
@@ -106,7 +105,7 @@ class social:
             self.db.commit()
             return True
         except Exception as ex:
-            print("Error updating usuario: ", ex)
+            logging.error("Error updating usuario: ", ex)
             self.db.rollback()
             return False
 
@@ -116,7 +115,7 @@ class social:
             self.db.commit()
             return True
         except Exception as ex:
-            print("Error updating articulos_adquiridos: ", ex)
+            logging.error("Error updating articulos_adquiridos: ", ex)
             self.db.rollback()
             return False
 
@@ -126,7 +125,7 @@ class social:
             self.db.commit()
             return True
         except Exception as ex:
-            print("Error updating saldo: ", ex)
+            logging.error("Error updating saldo: ", ex)
             self.db.rollback()
             return False
             
@@ -136,7 +135,7 @@ class social:
             self.db.commit()
             return True
         except Exception as ex:
-            print("Error deleting usuario: ", ex)
+            logging.error("Error deleting usuario: ", ex)
             self.db.rollback()
             return False
 
@@ -147,7 +146,7 @@ class social:
             self.db.execute(f"SELECT * FROM Perfil WHERE Nombre_Usuario = '{nombre_usuario}' AND Email = '{email}'")
             return self.db.fetchone()
         except Exception as ex:
-            print("Error getting perfil: ", ex)
+            logging.error("Error getting perfil: ", ex)
 
     def insert_perfil(self, nombre_usuario, email, fotografia, biografia, logros, articulos_adquiridos):
         try:
@@ -155,7 +154,7 @@ class social:
                             "'{biografia}', '{logros}', '{articulos_adquiridos}')")
             return True
         except Exception as ex:
-            print("Error inserting perfil: ", ex)
+            logging.error("Error inserting perfil: ", ex)
             self.db.rollback()
             return False
 
@@ -167,7 +166,7 @@ class social:
             self.db.commit()
             return True
         except Exception as ex:
-            print("Error updating perfil: ", ex)
+            logging.error("Error updating perfil: ", ex)
             self.db.rollback()
             return False
 
@@ -177,7 +176,7 @@ class social:
             self.db.commit()
             return True
         except Exception as ex:
-            print("Error deleting perfil: ", ex)
+            logging.error("Error deleting perfil: ", ex)
             self.db.rollback()
             return False
 
@@ -187,14 +186,14 @@ class social:
             self.db.execute(f"SELECT * FROM Amistad WHERE Nombre_Usuario = '{nombre_usuario}'")
             return self.db.fetchone()
         except Exception as ex:
-            print("Error getting amistad: ", ex)
+            logging.error("Error getting amistad: ", ex)
 
     def insert_amistad(self, nombre_usuario, amigo):
         try:
             self.db.execute(f"INSERT INTO Amistad VALUES ('{nombre_usuario}', '{amigo}', {false})")
             return True
         except Exception as ex:
-            print("Error inserting amistad: ", ex)
+            logging.error("Error inserting amistad: ", ex)
             self.db.rollback()
             return False
 
@@ -204,7 +203,7 @@ class social:
             self.db.commit()
             return True
         except Exception as ex:
-            print("Error accepting amistad: ", ex)
+            logging.error("Error accepting amistad: ", ex)
             self.db.rollback()
             return False
 
@@ -214,7 +213,7 @@ class social:
             self.db.commit()
             return True
         except Exception as ex:
-            print("Error deleting amistad: ", ex)
+            logging.error("Error deleting amistad: ", ex)
             self.db.rollback()
             return False
     

@@ -4,23 +4,23 @@ import app.query.articulo as query
 import app.database as database
 from flask import Flask, request, jsonify, Blueprint
 
-detalle_pedido = Blueprint('detalle_pedido', __name__)
+articulo = Blueprint('articulo', __name__)
 db = database.database()
 q = query.articulo(db)
 
 
-@detalle_pedido.route('/detalle_pedido/', methods=['GET'])
+@articulo.route('/detalle_pedido/', methods=['GET'])
 def query_detalle_pedido():
     result = q.get_detalle_pedido()
     return jsonify(result)
 
-@detalle_pedido.route('/detalle_pedido/<cpedido>/<cproducto>', methods=['GET'])
+@articulo.route('/detalle_pedido/<cpedido>/<cproducto>', methods=['GET'])
 def query_detalle_pedido_by_id(cpedido, cproducto):    
     result = q.get_detalle_pedido_by_id(cpedido, cproducto)
     return jsonify(result)
     
 
-@detalle_pedido.route('/detalle_pedido/', methods=['POST'])
+@articulo.route('/detalle_pedido/', methods=['POST'])
 def insert_detalle_pedido():
     try:
         record = json.loads(request.data)
@@ -68,7 +68,7 @@ def insert_detalle_pedido():
         return jsonify({'error': 'error inserting detalle pedido'})
 
 
-@detalle_pedido.route('/detalle_pedido/delete', methods=['POST'])
+@articulo.route('/detalle_pedido/delete', methods=['POST'])
 def delete_detalle_pedido():
     try:
         # Check if pedido exists

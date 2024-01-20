@@ -1,3 +1,5 @@
+import logging
+
 class articulo:
     def __init__(self, database):
         self.db = database
@@ -12,7 +14,7 @@ class articulo:
             self.db.commit()
             return True
         except Exception as ex:
-            print("Error creating tables: ", ex)
+            logging.error("Error creating tables: ", ex)
             self.db.rollback()
             return False
   
@@ -23,7 +25,7 @@ class articulo:
             return True
         
         except Exception as ex:
-            print("Error deleting table Articulo: ", ex)
+            logging.error("Error deleting table Articulo: ", ex)
             self.db.rollback()
             return False
 
@@ -38,11 +40,11 @@ class articulo:
                             "Icono VARCHAR(50),"
                             "Estadisticas VARCHAR(50),"
                             "Ejecutable VARCHAR(50),"
-                            "Especificaciones VARCHAR(500),"
+                            "Especificaciones VARCHAR(500))"
                             )
         
         except Exception as ex:
-            print("Error creating table Articulo: ", ex)
+            logging.error("Error creating table Articulo: ", ex)
             self.db.rollback()
 
     def subir_articulo(self, titulo, tamano, desc, desl, genero, icono, eje, esp):
@@ -51,7 +53,7 @@ class articulo:
             self.db.commit()
             return True
         except Exception as ex:
-            print("Error inserting Articulo: ", ex)
+            logging.error("Error inserting Articulo: ", ex)
             self.db.rollback()
             return False
 
@@ -60,18 +62,17 @@ class articulo:
             self.db.execute(f"SELECT * FROM Articulo WHERE Titulo = {titulo}")
             return self.db.fetchall()
         except Exception as ex:
-            print("Error getting Articulo: ", ex)
+            logging.error("Error getting Articulo: ", ex)
 
     def create_table_articulo_obtenido(self):
         try:
             self.db.execute("CREATE TABLE Articulo_obtenido("
-                            "Nombre_usuario FOREIGN KEY REFERENCES Usuario(Nombre_Usuario),"
-                            "Titulo_articulo FOREIGN KEY REFERENCES Articulo(Titulo),"
+                            "Nombre_usuario VARCHAR(20) REFERENCES Usuario(Nombre_Usuario),"
+                            "Titulo_articulo VARCHAR(100) REFERENCES Articulo(Titulo),"
                             "Ult_vez_jugado DATETIME,"
-                            "PRIMARY KEY (Nombre_usuario,Titulo_articulo)"
-                            ")")
+                            "PRIMARY KEY (Nombre_usuario,Titulo_articulo))")
         except Exception as ex:
-            print("Error creating table Articulo_obtenido: ", ex)
+            logging.error("Error creating table Articulo_obtenido: ", ex)
             self.db.rollback()
             
     def anadir_articulo_obtenido(self,user,articulo):
@@ -80,7 +81,7 @@ class articulo:
             self.db.commit()
             return True
         except Exception as ex:
-            print("Error inserting Articulo_obtenido: ", ex)
+            logging.error("Error inserting Articulo_obtenido: ", ex)
             self.db.rollback()
             return False
 
@@ -91,7 +92,7 @@ class articulo:
             self.db.execute(f"SELECT Titulo FROM Articulo_obtenido WHERE Nombre_usuario = {user} ORDER BY Ult_vez_jugado LIMIT {n}")
             return self.db.fetchall()
         except Exception as ex:
-            print("Error al mostrar los articulos obtenidos: ", ex)
+            logging.error("Error al mostrar los articulos obtenidos: ", ex)
 
     def ejecuta(self, user, juego):
         try:
@@ -99,19 +100,18 @@ class articulo:
             self.db.commit()
             return True
         except Exception as ex:
-            print("Error al ejecutar el artículo: ", ex)
+            logging.error("Error al ejecutar el artículo: ", ex)
     
     def create_table_valoracion(self):
         try:
             self.db.execute("CREATE TABLE Valoracion ("
-                            "Nombre_usuario FOREIGN KEY REFERENCES Usuario(Nombre_Usuario),"
-                            "Titulo_articulo FOREIGN KEY REFERENCES Articulo(Titulo),"
-                            "Puntuacion INTEGER CHECK (Puntuacion > 0 AND Puntuacion < 6)"
+                            "Nombre_usuario VARCHAR(20) REFERENCES Usuario(Nombre_Usuario),"
+                            "Titulo_articulo VARCHAR(100) REFERENCES Articulo(Titulo),"
+                            "Puntuacion INTEGER CHECK (Puntuacion > 0 AND Puntuacion < 6),"
                             "Comentario VARCHAR(500),"
-                            "PRIMARY KEY (Nombre_usuario,Titulo_articulo)"
-                            )
+                            "PRIMARY KEY (Nombre_usuario,Titulo_articulo))")
         except Exception as ex:
-            print("Error creating table Valoracion: ", ex)
+            logging.error("Error creating table Valoracion: ", ex)
             self.db.rollback()
 
     def comentar(self,usr,articulo,punt,com):
@@ -120,6 +120,6 @@ class articulo:
             self.db.commit()
             return True
         except Exception as ex:
-            print("Error inserting Valoracion: ", ex)
+            logging.error("Error inserting Valoracion: ", ex)
             self.db.rollback()
             return False

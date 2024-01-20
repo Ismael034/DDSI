@@ -6,25 +6,25 @@ import app.query.articulo as query_articulo
 import app.database as database
 from flask import request, jsonify, Blueprint, current_app
 
-creacion = Blueprint('dev', __name__)
+dev = Blueprint('dev', __name__)
 db = database.database()
 
 q_dev = query_dev.dev(db)
 q_articulo = query_articulo.articulo(db)
 
-@creacion.route('/creacion/<titulo_creacion>', methods=['GET'])
+@dev.route('/creacion/<titulo_creacion>', methods=['GET'])
 def query_consulta_creacion(titulo_creacion):
  
     result = q_dev.consulta_creacion(titulo_creacion)
     return jsonify(result)
     
-@creacion.route('/creacion/<tipo>', methods=['GET'])
+@dev.route('/creacion/<tipo>', methods=['GET'])
 def query_listar_creaciones(tipo):
  
     result = q_dev.listar_creaciones(tipo)
     return jsonify(result)
         
-@creacion.route('/creacion', methods=['POST'])
+@dev.route('/creacion', methods=['POST'])
 def query_subir_creacion():
     try:
         record = json.loads(request.data)
@@ -56,7 +56,7 @@ def query_subir_creacion():
         return jsonify({'error': 'error subiendo creacion'})
 
     
-@stock.route('/creacion/<titulo_creacion>/delete', methods=['POST'])
+@dev.route('/creacion/<titulo_creacion>/delete', methods=['POST'])
 def query_borrar_creacion(titulo_creacion):
     try:
         if titulo_creacion is None:

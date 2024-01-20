@@ -3,10 +3,10 @@ import logging
 
 from app.api.config import Config
 
-from app.api.routes.articulo.articulo import articulo
-from app.api.routes.tienda.tienda import tienda
-from app.api.routes.social.social import social
-from app.api.routes.dev.dev import dev
+from app.api.routes.articulo import articulo
+from app.api.routes.tienda import tienda
+from app.api.routes.social import social
+from app.api.routes.dev import dev
 
 from app.database import database
 from app.api.helpers import helpers

@@ -1,3 +1,5 @@
+import logging
+
 class tienda:
     def __init__(self, database):
         self.db = database
@@ -11,7 +13,7 @@ class tienda:
             self.db.commit()
             return True
         except Exception as ex:
-            print("Error creating tables: ", ex)
+            logging.error("Error creating tables: ", ex)
             self.db.rollback()
             return False
   
@@ -23,11 +25,12 @@ class tienda:
                             "Genero VARCHAR(20),"
                             "Precio INTEGER,"
                             "Version INTEGER,"
-                            "UNIQUE (Titulo_Videojuego),"
-                            "FOREIGN KEY (Nombre_Usuario) REFERENCES Usuario(Nombre_Usuario))")
+                            "FOREIGN KEY (Titulo_Videojuego) REFERENCES Articulo(Titulo),"
+                            "FOREIGN KEY (Nombre_Usuario) REFERENCES Usuario(Nombre_Usuario),"
+                            "PRIMARY KEY (Titulo_Videojuego))")
         
         except Exception as ex:
-            print("Error creating Tienda table: ", ex)
+            logging.error("Error creating Tienda table: ", ex)
             self.db.rollback()
  
     def create_table_compra(self):
@@ -35,13 +38,13 @@ class tienda:
             self.db.execute("CREATE TABLE Compra ("
                             "Titulo_Videojuego VARCHAR(30),"
                             "Nombre_Usuario VARCHAR(20),"
-                            "Fecha_Transaccion DATETIME),"
-                            "PRIMARY KEY (Titulo_Videojuego, Nombre_Usuario),"
+                            "Fecha_Transaccion DATETIME,"
                             "FOREIGN KEY (Titulo_Videojuego) REFERENCES Videojuego(Titulo_Videojuego),"
-                            "FOREIGN KEY (Nombre_Usuario) REFERENCES Usuario(Nombre_Usuario))")
+                            "FOREIGN KEY (Nombre_Usuario) REFERENCES Usuario(Nombre_Usuario),"
+                            "PRIMARY KEY (Titulo_Videojuego, Nombre_Usuario))")
         
         except Exception as ex:
-            print("Error creating Compra table:", ex)
+            logging.error("Error creating Compra table:", ex)
             
             
     def insert_videojuego(self, titulo_videojuego, precio, version, nombre_usuario, genero):
@@ -50,7 +53,7 @@ class tienda:
             self.db.commit()
             return True
         except Exception as ex:
-            print("Error inserting videojuego: ", ex)
+            logging.error("Error inserting videojuego: ", ex)
             self.db.rollback()
             return False
         
@@ -60,7 +63,7 @@ class tienda:
             self.db.commit()
             return True
         except Exception as ex:
-            print("Error deleting videojuego: ", ex)
+            logging.error("Error deleting videojuego: ", ex)
             self.db.rollback()
             return False
         
@@ -70,7 +73,7 @@ class tienda:
             self.db.commit()
             return True
         except Exception as ex:
-            print("Error updating version videojuego: ", ex)
+            logging.error("Error updating version videojuego: ", ex)
             self.db.rollback()
             return False
     
@@ -79,7 +82,7 @@ class tienda:
             self.db.execute(f"SELECT * FROM Videojuego WHERE genero = '{genero}'")
             return self.db.fetchall()
         except Exception as ex:
-            print("Error getting videojuego por genero: ", ex)
+            logging.error("Error getting videojuego por genero: ", ex)
     
     def comprar_videojuego(self, cvideojuego, nombre_usuario):
         try:
@@ -87,7 +90,7 @@ class tienda:
             self.db.commit()
             return True
         except Exception as ex:
-            print("Error comprando videojuego: ", ex)
+            logging.error("Error comprando videojuego: ", ex)
             self.db.rollback()
             return False
         
@@ -97,6 +100,6 @@ class tienda:
             self.db.commit()
             return True
         except Exception as ex:
-            print("Error adding saldo: ", ex)
+            logging.error("Error adding saldo: ", ex)
             self.db.rollback()
             return False

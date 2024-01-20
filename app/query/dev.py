@@ -1,6 +1,7 @@
 
 import app.query.articulo as articulo
 import app.query.social as social
+import logging
 
 class dev:
     def __init__(self, database):
@@ -16,7 +17,7 @@ class dev:
             self.db.commit()
         
         except Exception as ex:
-            print("Error deleting table: ", ex)
+            logging.error("Error deleting table: ", ex)
             self.db.rollback()
 
     def delete_table(self, name):
@@ -25,7 +26,7 @@ class dev:
             return True
         
         except Exception as ex:
-            print("Error deleting table: ", ex)
+            logging.error("Error deleting table: ", ex)
             self.db.rollback()
             return False
 
@@ -38,45 +39,48 @@ class dev:
                             "Nombre_Usuario VARCHAR(20),"
                             "NumDescargas INTEGER,"
                             "Fecha_Subida DATE,"
-                            "Modificacion_activada BOOLEAN"
-                            "PRIMARY KEY (Titulo_Creacion) REFERENCES Articulo(Titulo),"
-                            "FOREIGN KEY (Videojuego_Asociado) REFERENCES Articulo(Titulo)),"
-                            "UNIQUE KEY (Nombre_Usuario) REFERENCES Usuario(Nombre_Usuario))")
+                            "Modificacion_activada BOOLEAN,"
+                            "FOREIGN KEY (Titulo_Creacion) REFERENCES Articulo(Titulo),"
+                            "FOREIGN KEY (Videojuego_Asociado) REFERENCES Articulo(Titulo),"
+                            "FOREIGN KEY (Nombre_Usuario) REFERENCES Usuario(Nombre_Usuario),"
+                            "PRIMARY KEY (Titulo_Creacion))")
         
         except Exception as ex:
-            print("Error creating creacion table: ", ex)
+            logging.error("Error creating creacion table: ", ex)
             self.db.rollback()
  
     def create_table_creacion_consulta(self):
         try:
             self.db.execute("CREATE TABLE Consultar_Creacion ("
-                            "Titulo_Creacion VARCHAR(100) REFERENCES Articulo(Titulo),"
-                            "Nombre_Usuario VARCHAR(20) REFERENCES Usuario(Nombre_Usuario)",
+                            "Titulo_Creacion VARCHAR(100),"
+                            "Nombre_Usuario VARCHAR(20),"
+                            "FOREIGN KEY (Titulo_Creacion) REFERENCES Articulo(Titulo),"
+                            "FOREIGN KEY (Nombre_Usuario) REFERENCES Usuario(Nombre_Usuario),"
                             "PRIMARY KEY (Titulo_Creacion, Nombre_Usuario)")
         
         except Exception as ex:
-            print("Error creating creacion_consulta table:", ex)
+            logging.error("Error creating creacion_consulta table:", ex)
 
     def create_table_creacion_lista(self):
         try:
             self.db.execute("CREATE TABLE Listar_Creacion ("
             		    "Titulo_Creacion VARCHAR(100) REFERENCES Articulo(Titulo),"
-                            "Nombre_Usuario VARCHAR(20) REFERENCES Usuario(Nombre_Usuario)",
-                            "Tipo_a_listar VARCHAR(16)",
+                            "Nombre_Usuario VARCHAR(20) REFERENCES Usuario(Nombre_Usuario),"
+                            "Tipo_a_listar VARCHAR(16),"
                             "PRIMARY KEY (Titulo_Creacion, Nombre_Usuario, Tipo_a_listar)")
         except Exception as ex:
-            print("Error creating creacion_lista table: ", ex)
+            logging.error("Error creating creacion_lista table: ", ex)
 
 
     def create_tables(self):
         try:
             self.create_table_creacion()
-            self.create_table_creacion_lista()
-            self.create_table_creacion_consulta()
+            #self.create_table_creacion_lista()
+            #self.create_table_creacion_consulta()
             self.db.commit()
             return True
         except Exception as ex:
-            print("Error creating tables: ", ex)
+            logging.error("Error creating tables: ", ex)
             self.db.rollback()
             return False
   
@@ -93,7 +97,7 @@ class dev:
             self.db.commit()
             return True
         except Exception as ex:
-            print("Error subiendo creacion: ", ex)
+            logging.error("Error subiendo creacion: ", ex)
             self.db.rollback()
             return False
 
@@ -102,21 +106,21 @@ class dev:
             self.db.execute(f"SELECT * FROM Creacion WHERE Titulo_Creacion = {nomb}")
             return self.db.fetchall()
         except Exception as ex:
-            print("Error consulta creacion: ", ex)
+            logging.error("Error consulta creacion: ", ex)
 
     def listar_creaciones(self, t):
         try:
             self.db.execute(f"SELECT Titulo_Creacion FROM Creacion WHERE Tipo = {t}")
             return self.db.fetchone()
         except Exception as ex:
-            print("Error listar creaciones: ", ex)
+            logging.error("Error listar creaciones: ", ex)
 
     def borrar_creacion(self, nomb, usr):
         try:
             self.db.execute(f"DELETE FROM Creacion WHERE Titulo_Creacion = {nomb} AND Nombre_Usuario = {usr}")
             self.db.commit()
         except Exception as ex:
-            print("Error deleting creacion: ", ex)
+            logging.error("Error deleting creacion: ", ex)
             self.db.rollback()
 
     def activar_mod(self, nomb):
@@ -126,7 +130,7 @@ class dev:
             try:
                 self.db.execute(f"UPDATE Creacion SET Modificacion_activada = 1 WHERE Titulo_Creacion = {nomb}")
             except Exception as ex:
-                print("Error al activar modificación",ex)
+                logging.error("Error al activar modificación",ex)
                 self.db.rollback()
         else:
-            print("Esta creacion no es una modificacion\n")
+            logging.error("Esta creacion no es una modificacion\n")
