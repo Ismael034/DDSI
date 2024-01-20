@@ -1,13 +1,15 @@
 import json
 import logging
-import app.query.tienda as query
+import app.query.tienda as query_tienda
+import app.query.articulo as query_articulo
+
 import app.database as database
 from flask import Blueprint, jsonify, request
 
 tienda = Blueprint('tienda', __name__)
 db = database.database()
-q = query.tienda(db)
-q_articulo = query.articulo(db)
+q = query_tienda.tienda(db)
+q_articulo = query_articulo.articulo(db)
 
 #Publicar videojuego
 @tienda.route('/tienda/', methods=['POST'])
@@ -53,7 +55,7 @@ def query_tienda(genero):
 def comprar_videojuego(cvideojuego):
   nombre_usuario = record['nombre_usuario']
   result = q.comprar_videojuego(cvideojuego, nombre_usuario)
-  result2 = q_articulo.añadir_articulo_obtenido(nombre_usuario, cvideojuego)
+  result2 = q_articulo.anadir_articulo_obtenido(nombre_usuario, cvideojuego)
   return jsonify(result)
 
 #Añadir saldo a un usuario

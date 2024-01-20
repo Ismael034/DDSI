@@ -4,6 +4,19 @@ class articulo:
         self.db.connect()
         self.db.rollback()     
 
+    def create_tables(self):
+        try:
+            self.create_table_articulo()
+            self.create_table_articulo_obtenido()
+            self.create_table_valoracion()
+            self.db.commit()
+            return True
+        except Exception as ex:
+            print("Error creating tables: ", ex)
+            self.db.rollback()
+            return False
+  
+
     def delete_table(self):
         try:
             self.db.execute(f"DROP TABLE Articulo")
@@ -61,7 +74,7 @@ class articulo:
             print("Error creating table Articulo_obtenido: ", ex)
             self.db.rollback()
             
-    def añadir_articulo_obtenido(self,nombre_usuario,titulo_articulo):
+    def anadir_articulo_obtenido(self,user,articulo):
         try:
             self.db.execute(f"INSERT INTO Articulo_obtenido(Nombre_usuario,Titulo_articulo) VALUES ({user},{articulo})")
             self.db.commit()

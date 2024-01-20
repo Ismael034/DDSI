@@ -1,24 +1,27 @@
 import json
 import logging
-import app.query.dev as query
+import app.query.dev as query_dev
+import app.query.articulo as query_articulo
+
 import app.database as database
 from flask import request, jsonify, Blueprint, current_app
 
 creacion = Blueprint('dev', __name__)
 db = database.database()
-q = query.dev(db)
 
+q_dev = query_dev.dev(db)
+q_articulo = query_articulo.articulo(db)
 
 @creacion.route('/creacion/<titulo_creacion>', methods=['GET'])
 def query_consulta_creacion(titulo_creacion):
  
-    result = q.consulta_creacion(titulo_creacion)
+    result = q_dev.consulta_creacion(titulo_creacion)
     return jsonify(result)
     
 @creacion.route('/creacion/<tipo>', methods=['GET'])
 def query_listar_creaciones(tipo):
  
-    result = q.listar_creaciones(tipo)
+    result = q_dev.listar_creaciones(tipo)
     return jsonify(result)
         
 @creacion.route('/creacion', methods=['POST'])
@@ -41,7 +44,7 @@ def query_subir_creacion():
         ruta_ejecutable = record['ruta_ejecutable']
         especificaciones = record['especificaciones']
       
-        q.subir_creacion(titulo, tipo, vid, usu, fecha)
+        q_dev.subir_creacion(titulo, tipo, vid, usu, fecha)
         q_articulo.subir_articulo(titulo, tamaño, descripcion_corta, descripcion_larga, genero, icono, ruta_ejecutable, especificaciones)
         db.commit()
 
@@ -59,7 +62,7 @@ def query_borrar_creacion(titulo_creacion):
         if titulo_creacion is None:
             return jsonify({'error': 'invalid values'}), 400
 
-        q.borrar_creacion(titulo_creacion)
+        q_dev.borrar_creacion(titulo_creacion)
         db.commit()
         
         result = jsonify({'message': 'creacion eliminada'})

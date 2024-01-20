@@ -6,7 +6,7 @@ from flask import Flask, request, jsonify, Blueprint
 
 detalle_pedido = Blueprint('detalle_pedido', __name__)
 db = database.database()
-q = query.query(db)
+q = query.articulo(db)
 
 
 @detalle_pedido.route('/detalle_pedido/', methods=['GET'])

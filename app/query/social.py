@@ -25,7 +25,18 @@ class social:
             self.db.rollback()
             return False
 
-
+    def create_tables(self):
+        try:
+            self.create_table_usuario()
+            self.create_table_perfil()
+            self.create_table_amistad()
+            self.db.commit()
+            return True
+        except Exception as ex:
+            print("Error creating tables: ", ex)
+            self.db.rollback()
+            return False
+  
 
     def create_table_usuario(self):
         try:
@@ -67,17 +78,7 @@ class social:
         except Exception as ex:
             print("Error creating articulo table: ", ex)
 
-    def create_tables(self):
-        try:
-            self.create_table_usuario()
-            self.create_table_perfil()
-            self.create_table_amistad()
-            self.db.commit()
-            return True
-        except Exception as ex:
-            print("Error creating tables: ", ex)
-            self.db.rollback()
-            return False
+
 
 
 
@@ -106,6 +107,16 @@ class social:
             return True
         except Exception as ex:
             print("Error updating usuario: ", ex)
+            self.db.rollback()
+            return False
+
+    def update_articulos_adquiridos(self, nombre_usuario, articulos_adquiridos):
+        try:
+            self.db.execute(f"UPDATE Usuario SET articulos_adquiridos = '{articulos_adquiridos}' WHERE nombre_usuario = '{nombre_usuario}'")
+            self.db.commit()
+            return True
+        except Exception as ex:
+            print("Error updating articulos_adquiridos: ", ex)
             self.db.rollback()
             return False
 

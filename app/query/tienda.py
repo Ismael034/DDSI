@@ -4,6 +4,17 @@ class tienda:
         self.db.connect()
         self.db.rollback()
 
+    def create_tables(self):
+        try:
+            self.create_table_videojuego()
+            self.create_table_compra()
+            self.db.commit()
+            return True
+        except Exception as ex:
+            print("Error creating tables: ", ex)
+            self.db.rollback()
+            return False
+  
     def create_table_videojuego(self):
         try:
             self.db.execute("CREATE TABLE Videojuego ("

@@ -1,6 +1,11 @@
+from app.database import database
+from app.query.query import query
+
 class helpers:
     @staticmethod
-    def check_init_tables(q, db):
+    def check_init_tables():
+        db = database().connect()
+        q = query(db)
         try:
             tables = q.get_tables()
             if len(tables) == 0:

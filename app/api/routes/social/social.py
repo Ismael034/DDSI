@@ -9,50 +9,37 @@ db = database.database()
 q = query.social(db)
 
 
-@social.route('/user/', methods=['GET'])
-def query_pedido():
-    result = q.get_pedido()
-    return jsonify(result)
-
 
 @social.route('/user/<username>', methods=['GET'])
-def query_pedido_by_id(username):
-    result = q.get(cpedido)
+def query_usuario_by_id(username):
+    result = q.get_usuario_by_id(username)
     return jsonify(result)
 
 
 @social.route('/user/', methods=['POST'])
-def create_pedido():
+def create_usuario():
     try:
         record = json.loads(request.data)
-        ccliente = record['ccliente']
-        fecha_pedido = record['fecha_pedido']
+        nombre_usuario = record['nombre_usuario']
+        nombre = record['nombre']
+        password = record['password']
+        saldo = 0
+        articulos_adquiridos = ''
 
         # Check values are valid
-        if not isinstance(ccliente, int) or not isinstance(fecha_pedido, str):
+        if not isinstance(nombre_usuario, str) or not isinstance(nombre, str) or not isinstance(password, str):
             return jsonify({'error': 'invalid values'}), 400
 
-        try:
-            fecha_pedido = datetime.datetime.strptime(fecha_pedido, "%Y-%m-%d").date()            
-        except Exception as e:
-            current_app.logger.debug("Error parsing date: ", e)
-            return jsonify({'error': 'invalid date'}), 400
-
-        
-        q.insert_pedido(ccliente, fecha_pedido)
-        db.commit()
-        
-        result = jsonify({'message': 'pedido creado'})
-
-        return result
+        q.insert_usuario(nombre_usuario, nombre, password, saldo, articulos_adquiridos)
+        return jsonify({'message': 'usuario creado'})
 
     except Exception as ex:
-        current_app.logger.debug("Error creating pedido: ", ex)
-        return jsonify({'error': 'error creating pedido'})
+        current_app.logger.debug("Error al crear usuario: ", ex)
+        return jsonify({'error': 'error al crear usuario'})
         
 
-@social.route('/user/<cpedido>/update', methods=['POST'])
-def update_pedido(cpedido):
+@social.route('/user/<usuario>/update', methods=['POST'])
+def update_usuario(usuario):
     try:
         record = json.loads(request.data)
         pedido = q.get_pedido_by_id(cpedido)
