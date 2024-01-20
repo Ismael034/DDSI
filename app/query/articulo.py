@@ -49,7 +49,7 @@ class articulo:
 
     def subir_articulo(self, titulo, tamano, desc, desl, genero, icono, eje, esp):
         try:
-            self.db.execute(f"INSERT INTO Articulo(Titulo,Tamaño,Descripcion_corta,Descripcion_larga,Genero,Icono,Ejecutable,Especificaciones) VALUES ({titulo}, {tamano},{desc}, {desl}, {genero}, {icono}, {eje}, {esp})")
+            self.db.execute(f"INSERT INTO Articulo(Titulo,Tamaño,Descripcion_corta,Descripcion_larga,Genero,Icono,Ejecutable,Especificaciones) VALUES ('{titulo}', '{tamano}','{desc}', '{desl}', '{genero}', '{icono}', '{eje}', '{esp}')")
             self.db.commit()
             return True
         except Exception as ex:

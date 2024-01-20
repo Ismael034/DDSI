@@ -39,11 +39,11 @@ def query_subir_creacion():
         descripcion_larga = record['descripcion_larga']
         genero = record['genero']
         icono = record['icono']
-        tamaño = record['tamaño']
+        tamano = record['tamano']
         ruta_ejecutable = record['ruta_ejecutable']
         especificaciones = record['especificaciones']
       
-        q_articulo.subir_articulo(titulo, tamaño, descripcion_corta, descripcion_larga, genero, icono, ruta_ejecutable, especificaciones)
+        q_articulo.subir_articulo(titulo, tamano, descripcion_corta, descripcion_larga, genero, icono, ruta_ejecutable, especificaciones)
         q_dev.subir_creacion(titulo, tipo, vid, usu, fecha)
         db.commit()
 
