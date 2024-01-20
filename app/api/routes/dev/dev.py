@@ -31,8 +31,18 @@ def query_subir_creacion():
         vid = record['videojuego_asociado']
         usu = record['nombre_usuario']
         fecha = record['fecha_subida']
+        
+        nombre_usuario = record['nombre_usuario']
+        descripcion_corta = record['descripcion_corta']
+        descripcion_larga = record['descripcion_larga']
+        genero = record['genero']
+        icono = record['icono']
+        tamaño = record['tamaño']
+        ruta_ejecutable = record['ruta_ejecutable']
+        especificaciones = record['especificaciones']
       
         q.subir_creacion(titulo, tipo, vid, usu, fecha)
+        q_articulo.subir_articulo(titulo, tamaño, descripcion_corta, descripcion_larga, genero, icono, ruta_ejecutable, especificaciones)
         db.commit()
 
         result = jsonify({'message': 'creacion subida'})

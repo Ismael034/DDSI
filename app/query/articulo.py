@@ -32,9 +32,9 @@ class articulo:
             print("Error creating table Articulo: ", ex)
             self.db.rollback()
 
-    def subir_articulo(self, titulo, tamano, desc, desl, genero, icono, est, eje, esp):
+    def subir_articulo(self, titulo, tamano, desc, desl, genero, icono, eje, esp):
         try:
-            self.db.execute(f"INSERT INTO Articulo(Titulo,Tamaño,Descripcion_corta,Descripcion_larga,Genero,Icono,Estadisticas,Ejecutable,Especificaciones) VALUES ({titulo}, {tamano},{desc}, {desl}, {genero}, {icono}, {est}, {eje}, {esp})")
+            self.db.execute(f"INSERT INTO Articulo(Titulo,Tamaño,Descripcion_corta,Descripcion_larga,Genero,Icono,Ejecutable,Especificaciones) VALUES ({titulo}, {tamano},{desc}, {desl}, {genero}, {icono}, {eje}, {esp})")
             self.db.commit()
             return True
         except Exception as ex:
@@ -60,12 +60,22 @@ class articulo:
         except Exception as ex:
             print("Error creating table Articulo_obtenido: ", ex)
             self.db.rollback()
+            
+    def añadir_articulo_obtenido(self,nombre_usuario,titulo_articulo):
+        try:
+            self.db.execute(f"INSERT INTO Articulo_obtenido(Nombre_usuario,Titulo_articulo) VALUES ({user},{articulo})")
+            self.db.commit()
+            return True
+        except Exception as ex:
+            print("Error inserting Articulo_obtenido: ", ex)
+            self.db.rollback()
+            return False
 
     def consultar_articulos(self,user,n):
         if n<0:
             n=0
         try:
-            self.db.execute(f"SELECT Titulo FROM Articulo_obtenido WHERE Nombre_usuario = {user} LIMIT {n} ORDER BY Ult_vez_jugado")
+            self.db.execute(f"SELECT Titulo FROM Articulo_obtenido WHERE Nombre_usuario = {user} ORDER BY Ult_vez_jugado LIMIT {n}")
             return self.db.fetchall()
         except Exception as ex:
             print("Error al mostrar los articulos obtenidos: ", ex)

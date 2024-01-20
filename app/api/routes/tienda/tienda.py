@@ -1,104 +1,64 @@
 import json
 import logging
-import app.query as query
+import app.query.tienda as query
 import app.database as database
-from flask import Flask, request, jsonify, Blueprint
+from flask import Blueprint, jsonify, request
 
-detalle_pedido = Blueprint('detalle_pedido', __name__)
+tienda = Blueprint('tienda', __name__)
 db = database.database()
-q = query.query(db)
+q = query.tienda(db)
+q_articulo = query.articulo(db)
+
+#Publicar videojuego
+@tienda.route('/tienda/', methods=['POST'])
+def insert_videojuego():
+  titulo_videojuego = record['titulo_videojuego']
+  precio = record['precio']
+  version = record['version']
+  nombre_usuario = record['nombre_usuario']
+  descripcion_corta = record['descripcion_corta']
+  descripcion_larga = record['descripcion_larga']
+  genero = record['genero']
+  icono = record['icono']
+  tamaño = record['tamaño']
+  ruta_ejecutable = record['ruta_ejecutable']
+  especificaciones = record['especificaciones']
+  
+  result = q.insert_videojuego(titulo_videojuego, precio, version, nombre_usuario, genero)
+  result2 = q_articulo.subir_articulo(titulo_videojuego, tamaño, descripcion_corta, descripcion_larga, genero, icono, ruta_ejecutable, especificaciones)
+  return jsonify(result)
 
 
-@detalle_pedido.route('/detalle_pedido/', methods=['GET'])
-def query_detalle_pedido():
-    result = q.get_detalle_pedido()
-    return jsonify(result)
+#Eliminar videojuego
+@tienda.route('/tienda/<cvideojuego>', methods=['DELETE'])
+def delete_videojuego(cvideojuego):
+  result = q.delete_videojuego(cvideojuego)
+  return jsonify(result)
 
-@detalle_pedido.route('/detalle_pedido/<cpedido>/<cproducto>', methods=['GET'])
-def query_detalle_pedido_by_id(cpedido, cproducto):    
-    result = q.get_detalle_pedido_by_id(cpedido, cproducto)
-    return jsonify(result)
-    
+#Actualizar version de un videojuego
+@tienda.route('/tienda/update-version/<cvideojuego>', methods=['POST'])
+def update_videojuego(cvideojuego):
+  version = record['version']
+  result = q.update_version_videojuego(cvideojuego, version)
+  return jsonify(result)
 
-@detalle_pedido.route('/detalle_pedido/', methods=['POST'])
-def insert_detalle_pedido():
-    try:
-        record = json.loads(request.data)
+#Obtener los videojuegos de un genero
+@tienda.route("/tienda/<genero>", methods=['GET'])
+def query_tienda(genero):
+  result = q.get_videojuego_por_genero(genero)
+  return jsonify(result)
 
-        cproducto = record['cproducto']
+#Comprar un videojuego
+@tienda.route('/tienda/comprar/<cvideojuego>', methods=['POST'])
+def comprar_videojuego(cvideojuego):
+  nombre_usuario = record['nombre_usuario']
+  result = q.comprar_videojuego(cvideojuego, nombre_usuario)
+  result2 = q_articulo.añadir_articulo_obtenido(nombre_usuario, cvideojuego)
+  return jsonify(result)
 
-        cpedido = record['cpedido']
-        cantidad = record['cantidad']
-
-        # Check values are valid
-        if not isinstance(cpedido, int) or not isinstance(cproducto, int) or not isinstance(cantidad, int):
-            return jsonify({'error': 'invalid values'}), 400
-
-        # Check if pedido exists
-        pedido = q.get_pedido_by_id(cpedido)
-        if pedido is None:
-            return jsonify({'error': 'pedido does not exist'}), 400
-
-        # Check if producto exists
-        stock = q.get_stock_by_id(cproducto)[1]
-        if stock is None:
-            return jsonify({'error': 'producto does not exist'}), 400
-
-        # Check if stock is in stock
-        if cantidad < 0:
-            return jsonify({'error': 'invalid value cantidad'}), 400
-
-        if stock - cantidad < 0:
-            return jsonify({'error': 'cantidad to update is greater than stock'}), 400
-
-        # Check if producto is already in pedido
-        detalle_pedido = q.get_detalle_pedido_by_id(cproducto, cpedido)
-        if detalle_pedido is not None:
-            return jsonify({'error': 'producto already in pedido'}), 400
-
-        # Insert detalle pedido and update stock
-        q.insert_detalle_pedido(cpedido, cproducto, cantidad)
-        q.update_stock(cproducto, cantidad)
-
-        result = q.get_detalle_pedido_by_id(cpedido, cproducto)
-        return jsonify(result)
-
-    except Exception as ex:
-        logging.error("Error insering detalle pedido: ", ex)
-        return jsonify({'error': 'error inserting detalle pedido'})
-
-
-@detalle_pedido.route('/detalle_pedido/delete', methods=['POST'])
-def delete_detalle_pedido():
-    try:
-        # Check if pedido exists
-        record = json.loads(request.data)
-        cproducto = record['cproducto']
-        cpedido = record['cpedido']
-
-        if cpedido is None or cproducto is None:
-            return jsonify({'error': 'invalid values'}), 400
-
-        pedido = q.get_pedido_by_id(cpedido)
-        if pedido is None:
-            return jsonify({'error': 'pedido does not exist'}), 400
-        
-        # Check if producto exists
-        stock = q.get_stock_by_id(cproducto)[1]
-        if stock is None:
-            return jsonify({'error': 'producto does not exist'}), 400
-
-        # Check if producto is in pedido
-        detalle_pedido = q.get_detalle_pedido_by_id(cpedido, cproducto)
-        if detalle_pedido is None:
-            return jsonify({'error': 'producto is not in pedido'}), 400
-
-        # Delete detalle pedido
-        q.delete_detalle_pedido(cpedido, cproducto)
-
-        result = jsonify({'message': 'detalle pedido deleted'})
-        return result
-
-    except Exception as ex:
-        logging.error("Error deleting detalle pedido: ", ex)
-        return jsonify({'error': 'error deleting detalle pedido'})
+#Añadir saldo a un usuario
+@tienda.route('/tienda/add-saldo/<cusuario>', methods=['POST'])
+def add_saldo(cusuario):
+  saldo = record['saldo']
+  result = q.add_saldo(cusuario, saldo)
+  return jsonify(result)
