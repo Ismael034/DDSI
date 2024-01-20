@@ -46,10 +46,9 @@ class biblioteca:
             print("Error creating stock perfil: ", ex)
             self.db.rollback()
 
-
- UsuarioRegistrado-AñadirSaldo(#Nombre_Usuario, Saldo, Nombre, Contraseña, Artículos_adquiridos)
  
-    def create_table_usuario(self):
+ ##################################################################################################
+    def create_table_(self):
         try:
             self.db.execute("CREATE TABLE Usuario ("
                             "#Nombre_Usuario VARCHAR(20) PRIMARY KEY,"
