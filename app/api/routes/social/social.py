@@ -6,22 +6,22 @@ from flask import request, jsonify, Blueprint, current_app
 
 social = Blueprint('social', __name__)
 db = database.database()
-q = query.query(db)
+q = query.social(db)
 
 
-@pedido.route('/pedido/', methods=['GET'])
+@social.route('/user/', methods=['GET'])
 def query_pedido():
     result = q.get_pedido()
     return jsonify(result)
 
 
-@pedido.route('/pedido/<cpedido>', methods=['GET'])
-def query_pedido_by_id(cpedido):
-    result = q.get_pedido_by_id(cpedido)
+@social.route('/user/<username>', methods=['GET'])
+def query_pedido_by_id(username):
+    result = q.get(cpedido)
     return jsonify(result)
 
 
-@pedido.route('/pedido/', methods=['POST'])
+@social.route('/user/', methods=['POST'])
 def create_pedido():
     try:
         record = json.loads(request.data)
@@ -51,7 +51,7 @@ def create_pedido():
         return jsonify({'error': 'error creating pedido'})
         
 
-@pedido.route('/pedido/<cpedido>/update', methods=['POST'])
+@social.route('/user/<cpedido>/update', methods=['POST'])
 def update_pedido(cpedido):
     try:
         record = json.loads(request.data)
@@ -69,7 +69,7 @@ def update_pedido(cpedido):
         return jsonify({'error': 'error updating pedido'})
 
 
-@pedido.route('/pedido/<cpedido>/delete', methods=['POST'])
+@social.route('/user/<cpedido>/delete', methods=['POST'])
 def delete_pedido_by_id(cpedido):
     try:
         pedido = q.get_pedido_by_id(cpedido)

@@ -62,7 +62,7 @@ class dev:
             		    "Titulo_Creacion VARCHAR(100) REFERENCES Articulo(Titulo),"
                             "Nombre_Usuario VARCHAR(20) REFERENCES Usuario(Nombre_Usuario)",
                             "Tipo_a_listar VARCHAR(16)",
-                            "PRIMARY KEY (Titulo_Creacion, Nombre_Usuario, Tipo_a_listar))
+                            "PRIMARY KEY (Titulo_Creacion, Nombre_Usuario, Tipo_a_listar)")
         except Exception as ex:
             print("Error creating creacion_lista table: ", ex)
 
@@ -85,7 +85,7 @@ class dev:
             self.db.execute(f"INSERT INTO Creacion(Titulo_Creacion) VALUES ({titulo})")
             self.db.execute(f"INSERT INTO Creacion(Tipo) VALUES ({tipo})")
             self.db.execute(f"INSERT INTO Creacion(Videojuego_Asociado) VALUES ({vid})")
-            self.db.execute(f"INSERT INTO Creacion(#Nombre_Usuario) VALUES ({usu})")
+            self.db.execute(f"INSERT INTO Creacion(Nombre_Usuario) VALUES ({usu})")
             self.db.execute(f"INSERT INTO Creacion(NumDescargas) VALUES ({0})")
             self.db.execute(f"INSERT INTO Creacion(Fecha_Subida) VALUES ({fecha})")
             self.db.commit()
