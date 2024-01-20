@@ -35,12 +35,12 @@ class dev:
                             "Titulo_Creacion VARCHAR(100),"
                             "Tipo VARCHAR(16),"
                             "Videojuego_Asociado VARCHAR(100),"
-                            "#Nombre_Usuario VARCHAR(20),"
+                            "Nombre_Usuario VARCHAR(20),"
                             "NumDescargas INTEGER,"
                             "Fecha_Subida DATE,"
-                            "PRIMARY KEY (Titulo_Creacion) REFERENCES Articulo(#Titulo),"
-                            "FOREIGN KEY (Videojuego_Asociado) REFERENCES Articulo(#Titulo)),"
-                            "UNIQUE KEY (#Nombre_Usuario) REFERENCES Usuario(#Nombre_Usuario))")
+                            "PRIMARY KEY (Titulo_Creacion) REFERENCES Articulo(Titulo),"
+                            "FOREIGN KEY (Videojuego_Asociado) REFERENCES Articulo(Titulo)),"
+                            "UNIQUE KEY (Nombre_Usuario) REFERENCES Usuario(Nombre_Usuario))")
         
         except Exception as ex:
             print("Error creating creacion table: ", ex)
@@ -49,9 +49,9 @@ class dev:
     def create_table_creacion_consulta(self):
         try:
             self.db.execute("CREATE TABLE Consultar_Creacion ("
-                            "Titulo_Creacion VARCHAR(100) REFERENCES Articulo(#Titulo),"
-                            "#Nombre_Usuario VARCHAR(20) REFERENCES Usuario(#Nombre_Usuario)",
-                            "PRIMARY KEY (Titulo_Creacion, #Nombre_Usuario)")
+                            "Titulo_Creacion VARCHAR(100) REFERENCES Articulo(Titulo),"
+                            "Nombre_Usuario VARCHAR(20) REFERENCES Usuario(Nombre_Usuario)",
+                            "PRIMARY KEY (Titulo_Creacion, Nombre_Usuario)")
         
         except Exception as ex:
             print("Error creating creacion_consulta table:", ex)
@@ -59,10 +59,10 @@ class dev:
     def create_table_creacion_lista(self):
         try:
             self.db.execute("CREATE TABLE Listar_Creacion ("
-            		    "Titulo_Creacion VARCHAR(100) REFERENCES Articulo(#Titulo),"
-                            "#Nombre_Usuario VARCHAR(20) REFERENCES Usuario(#Nombre_Usuario)",
+            		    "Titulo_Creacion VARCHAR(100) REFERENCES Articulo(Titulo),"
+                            "Nombre_Usuario VARCHAR(20) REFERENCES Usuario(Nombre_Usuario)",
                             "Tipo_a_listar VARCHAR(16)",
-                            "PRIMARY KEY (Titulo_Creacion, #Nombre_Usuario, Tipo_a_listar))
+                            "PRIMARY KEY (Titulo_Creacion, Nombre_Usuario, Tipo_a_listar))
         except Exception as ex:
             print("Error creating creacion_lista table: ", ex)
 

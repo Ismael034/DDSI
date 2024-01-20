@@ -6,21 +6,16 @@ from flask import request, jsonify, Blueprint, current_app
 
 creacion = Blueprint('dev', __name__)
 db = database.database()
-q = query.query(db)
+q = query.dev(db)
 
 
-@creacion.route('/creacion/', methods=['GET'])
-def query_creacion():
-    result = q.get_stock()
-    return jsonify(result)
-
-@creacion.route('/creacion/<Titulo_Creacion>', methods=['GET'])
+@creacion.route('/creacion/<titulo_creacion>', methods=['GET'])
 def query_consulta_creacion(titulo_creacion):
  
     result = q.consulta_creacion(titulo_creacion)
     return jsonify(result)
     
-@creacion.route('/creacion/<Tipo>', methods=['GET'])
+@creacion.route('/creacion/<tipo>', methods=['GET'])
 def query_listar_creaciones(tipo):
  
     result = q.listar_creaciones(tipo)
@@ -31,11 +26,11 @@ def query_subir_creacion():
     try:
         record = json.loads(request.data)
 
-        titulo = record['Titulo_Creacion']
-        tipo = record['Tipo']
-        vid = record['Videojuego_Asociado']
-        usu = record['#Nombre_Usuario']
-        fecha = record['Fecha_Subida']
+        titulo = record['titulo_creacion']
+        tipo = record['tipo']
+        vid = record['videojuego_asociado']
+        usu = record['nombre_usuario']
+        fecha = record['fecha_subida']
       
         q.subir_creacion(titulo, tipo, vid, usu, fecha)
         db.commit()
@@ -48,7 +43,7 @@ def query_subir_creacion():
         return jsonify({'error': 'error subiendo creacion'})
 
     
-@stock.route('/creacion/<Titulo_Creacion>/delete', methods=['POST'])
+@stock.route('/creacion/<titulo_creacion>/delete', methods=['POST'])
 def query_borrar_creacion(titulo_creacion):
     try:
         if titulo_creacion is None:
