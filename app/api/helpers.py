@@ -8,7 +8,7 @@ class helpers:
         db = database()
         q = query(db)
         try:
-            #q.delete_tables()
+            q.delete_tables()
             tables = q.get_tables()
             if len(tables) == 0:
                 logging.error("No tables found, creating tables...")
