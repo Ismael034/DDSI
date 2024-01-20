@@ -26,8 +26,10 @@ def insert_videojuego():
   ruta_ejecutable = record['ruta_ejecutable']
   especificaciones = record['especificaciones']
   
-  result = q.insert_videojuego(titulo_videojuego, precio, version, nombre_usuario, genero)
   result2 = q_articulo.subir_articulo(titulo_videojuego, tamaño, descripcion_corta, descripcion_larga, genero, icono, ruta_ejecutable, especificaciones)
+  
+  result = q.insert_videojuego(titulo_videojuego, precio, version, nombre_usuario, genero)
+  
   return jsonify(result)
 
 
