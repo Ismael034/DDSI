@@ -59,11 +59,11 @@ class social:
     def create_table_amistad(self):
         try:
             self.db.execute("CREATE TABLE Amistad ("
-                            "#Nombre_Usuario VARCHAR(20) PRIMARY KEY,"
+                            "Nombre_Usuario VARCHAR(20) PRIMARY KEY,"
                             "Amigo VARCHAR(20),"
                             "Aceptada BOOLEAN,"
-                            "FOREIGN KEY (#Nombre_Usuario) REFERENCES Usuario(#Nombre_Usuario),"
-                            "FOREIGN KEY (Amigo) REFERENCES Usuario(#Nombre_Usuario))")
+                            "FOREIGN KEY (Nombre_Usuario) REFERENCES Usuario(Nombre_Usuario),"
+                            "FOREIGN KEY (Amigo) REFERENCES Usuario(Nombre_Usuario))")
         except Exception as ex:
             print("Error creating articulo table: ", ex)
 
