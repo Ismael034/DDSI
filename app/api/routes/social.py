@@ -49,7 +49,10 @@ def update_usuario(usuario):
         # Check values are valid
         if not isinstance(nombre, str) or not isinstance(password, str) or not isinstance(articulos_adquiridos, str):
             return jsonify({'error': 'invalid values'}), 400
-
+    
+    except Exception as ex:
+        current_app.logger.debug("Error al actualizar usuario: ", ex)
+        return jsonify({'error': 'error al actualizar usuario'})
 
 @social.route('/user/<cpedido>/delete', methods=['POST'])
 def delete_pedido_by_id(cpedido):

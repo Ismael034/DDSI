@@ -9,56 +9,47 @@ db = database.database()
 q = query.articulo(db)
 
 
-@articulo.route('/detalle_pedido/', methods=['GET'])
-def query_detalle_pedido():
-    result = q.get_detalle_pedido()
+@articulo.route('/articulo/<titulo>', methods=['GET'])
+def query_articulo(titulo):
+    result = q.consultar_articulo(titulo)
     return jsonify(result)
 
-@articulo.route('/detalle_pedido/<cpedido>/<cproducto>', methods=['GET'])
+@articulo.route('/articulo/<titulo>/<cproducto>', methods=['GET'])
 def query_detalle_pedido_by_id(cpedido, cproducto):    
     result = q.get_detalle_pedido_by_id(cpedido, cproducto)
     return jsonify(result)
     
 
-@articulo.route('/detalle_pedido/', methods=['POST'])
-def insert_detalle_pedido():
+@articulo.route('/articulo/', methods=['POST'])
+def insert_articulo():
     try:
         record = json.loads(request.data)
 
-        cproducto = record['cproducto']
+        titulo = record['titulo']
 
-        cpedido = record['cpedido']
-        cantidad = record['cantidad']
+        tamano = record['tamaño']
+        descripcion_corta = record['descripcion_corta']
+        descripcion_larga = record['descripcion_larga']
+        genero = record['genero']
+        icono = record['icono']
+        est = record['estadisticas']
+        eje = record['ejecutable']
+        esp = record['especificaciones']
 
         # Check values are valid
-        if not isinstance(cpedido, int) or not isinstance(cproducto, int) or not isinstance(cantidad, int):
+        if not isinstance(titulo, str) or not isinstance(tamano, str) or not isinstance(descripcion_corta, str)\
+            or not isinstance(descripcion_larga,str) or not isinstance(genero,str):
             return jsonify({'error': 'invalid values'}), 400
 
         # Check if pedido exists
-        pedido = q.get_pedido_by_id(cpedido)
+        pedido = q.consultar_articulo(titulo)
         if pedido is None:
-            return jsonify({'error': 'pedido does not exist'}), 400
+            return jsonify({'error': 'articulo does not exist'}), 400
 
         # Check if producto exists
         stock = q.get_stock_by_id(cproducto)[1]
         if stock is None:
             return jsonify({'error': 'producto does not exist'}), 400
-
-        # Check if stock is in stock
-        if cantidad < 0:
-            return jsonify({'error': 'invalid value cantidad'}), 400
-
-        if stock - cantidad < 0:
-            return jsonify({'error': 'cantidad to update is greater than stock'}), 400
-
-        # Check if producto is already in pedido
-        detalle_pedido = q.get_detalle_pedido_by_id(cproducto, cpedido)
-        if detalle_pedido is not None:
-            return jsonify({'error': 'producto already in pedido'}), 400
-
-        # Insert detalle pedido and update stock
-        q.insert_detalle_pedido(cpedido, cproducto, cantidad)
-        q.update_stock(cproducto, cantidad)
 
         result = q.get_detalle_pedido_by_id(cpedido, cproducto)
         return jsonify(result)
