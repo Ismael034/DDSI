@@ -27,9 +27,12 @@ def insert_articulo():
 
         titulo = record['titulo']
 
+        if q.consultar_articulo(titulo) != None:
+            return jsonify({'error':'articulo con ese titulo ya existe'}), 400
+
         tamano = record['tamaño']
-        descripcion_corta = record['descripcion_corta']
-        descripcion_larga = record['descripcion_larga']
+        desc = record['descripcion_corta']
+        desl = record['descripcion_larga']
         genero = record['genero']
         icono = record['icono']
         est = record['estadisticas']
@@ -37,26 +40,21 @@ def insert_articulo():
         esp = record['especificaciones']
 
         # Check values are valid
-        if not isinstance(titulo, str) or not isinstance(tamano, str) or not isinstance(descripcion_corta, str)\
-            or not isinstance(descripcion_larga,str) or not isinstance(genero,str):
-            return jsonify({'error': 'invalid values'}), 400
+        if not isinstance(titulo, str) or not isinstance(tamano, str) or not isinstance(desc, str)\
+            or not isinstance(desl,str) or not isinstance(genero,str) or not isinstance(icono,str)\
+            or not isinstance(est,str) or not isinstance(eje,str) or not isinstance(esp,str):
+            return jsonify({'error': 'articulo invalid values'}), 400
 
         # Check if pedido exists
-        pedido = q.consultar_articulo(titulo)
-        if pedido is None:
+        articulo = q.consultar_articulo(titulo)
+        if articulo is None:
             return jsonify({'error': 'articulo does not exist'}), 400
-
-        # Check if producto exists
-        stock = q.get_stock_by_id(cproducto)[1]
-        if stock is None:
-            return jsonify({'error': 'producto does not exist'}), 400
-
-        result = q.get_detalle_pedido_by_id(cpedido, cproducto)
-        return jsonify(result)
-
+        
+        q.subir_articulo(titulo,tamano,desc,desl,genero,icono,eje,esp)
+        
     except Exception as ex:
-        logging.error("Error insering detalle pedido: ", ex)
-        return jsonify({'error': 'error inserting detalle pedido'})
+        logging.error("Error inserting Articulo: ", ex)
+        return jsonify({'error': 'error inserting Articulo'})
 
 
 @articulo.route('/detalle_pedido/delete', methods=['POST'])
