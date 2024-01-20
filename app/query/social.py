@@ -4,18 +4,11 @@ class social:
         self.db.connect()
         self.db.rollback()     
 
-    def get_tables(self):
-        try:
-            self.db.execute("SELECT table_name FROM information_schema.tables WHERE table_schema = DATABASE()")
-            return self.db.fetchall()
-        except Exception as ex:
-            print("Error getting tables: ", ex)
-
     def delete_tables(self):
         try:
             self.db.execute("DROP TABLE Usuario")
             self.db.execute("DROP TABLE Perfil")
-            self.db.execute("DROP TABLE Articulo")
+            self.db.execute("DROP TABLE Amistad")
             self.db.commit()
         
         except Exception as ex:
@@ -32,51 +25,53 @@ class social:
             self.db.rollback()
             return False
 
+
+
+    def create_table_usuario(self):
+        try:
+            self.db.execute("CREATE TABLE Usuario ("
+                            "Nombre_Usuario VARCHAR(20) PRIMARY KEY,"
+                            "Saldo INTEGER,"
+                            "Nombre VARCHAR(20),"
+                            "Password VARCHAR(100),"
+                            "Artículos_adquiridos VARCHAR(20))")
+        
+        except Exception as ex:
+            print("Error creating usuario table:", ex)
+
     def create_table_perfil(self):
         try:
             self.db.execute("CREATE TABLE Perfil ("
-                            "#Nombre_Usuario VARCHAR(20) PRIMARY KEY,"
+                            "Nombre_Usuario VARCHAR(20),"
                             "Email VARCHAR(20),"
                             "Fotografía BLOB,"
                             "Biografía VARCHAR(300),"
                             "Logros VARCHAR(300),"
-                            "Artículos_adquiridos VARCHAR(20)")
+                            "Artículos_adquiridos VARCHAR(20)",
+                            "FOREIGN KEY (Nombre_Usuario) REFERENCES Usuario(Nombre_Usuario)",
+                            "FOREIGN KEY (Artículos_adquiridos) REFERENCES Usuario(Artículos_adquiridos)",
+                            "PRIMARY KEY (Nombre_Usuario, Email)")
         
         except Exception as ex:
             print("Error creating stock perfil: ", ex)
             self.db.rollback()
 
-
- UsuarioRegistrado-AñadirSaldo(#Nombre_Usuario, Saldo, Nombre, Contraseña, Artículos_adquiridos)
- 
-    def create_table_usuario(self):
+    def create_table_amistad(self):
         try:
-            self.db.execute("CREATE TABLE Usuario ("
+            self.db.execute("CREATE TABLE Amistad ("
                             "#Nombre_Usuario VARCHAR(20) PRIMARY KEY,"
-                            "Saldo INTEGER,"
-                            "Fecha_pedido DATE)")
-        
-        except Exception as ex:
-            print("Error creating usuario table:", ex)
-
-    def create_table_articulo(self):
-        try:
-            self.db.execute("CREATE TABLE Articulo ("
-                            "Cpedido INTEGER,"
-                            "Cproducto INTEGER,"
-                            "Cantidad INTEGER CHECK (Cantidad > 0),"
-                            "PRIMARY KEY (Cpedido, Cproducto),"
-                            "FOREIGN KEY (Cpedido) REFERENCES Pedido(Cpedido),"
-                            "FOREIGN KEY (Cproducto) REFERENCES Stock(Cproducto))")
+                            "Amigo VARCHAR(20),"
+                            "Aceptada BOOLEAN,"
+                            "FOREIGN KEY (#Nombre_Usuario) REFERENCES Usuario(#Nombre_Usuario),"
+                            "FOREIGN KEY (Amigo) REFERENCES Usuario(#Nombre_Usuario))")
         except Exception as ex:
             print("Error creating articulo table: ", ex)
 
-
     def create_tables(self):
         try:
-            self.create_table_perfil()
             self.create_table_usuario()
-            self.create_table_articulo()
+            self.create_table_perfil()
+            self.create_table_amistad()
             self.db.commit()
             return True
         except Exception as ex:
@@ -86,129 +81,130 @@ class social:
 
 
 
-
-
-    def insert_stock(self, cantidad):
+    def get_usuario_by_id(self, nombre_usuario):
         try:
-            self.db.execute(f"INSERT INTO Stock(Cantidad) VALUES ({cantidad})")
-            self.db.commit()
+            self.db.execute(f"SELECT * FROM Usuario WHERE Nombre_Usuario = '{nombre_usuario}'")
+            return self.db.fetchone()
+        except Exception as ex:
+            print("Error getting usuario: ", ex)
+
+    def insert_usuario(self, nombre_usuario, nombre, password):
+        try:
+            self.db.execute(f"INSERT INTO Usuario VALUES ('{nombre_usuario}', 0,"
+                            "'{nombre}', '{password}', '')")
             return True
         except Exception as ex:
             print("Error inserting stock: ", ex)
             self.db.rollback()
             return False
-
-    def get_stock(self):
+    
+    def update_usuario(self, nombre_usuario, nombre, password, articulos_adquiridos):
         try:
-            self.db.execute("SELECT * FROM Stock")
-            return self.db.fetchall()
-        except Exception as ex:
-            print("Error getting stock: ", ex)
-
-    def get_stock_by_id(self, cproducto):
-        try:
-            self.db.execute(f"SELECT * FROM Stock WHERE cproducto = {cproducto}")
-            return self.db.fetchone()
-        except Exception as ex:
-            print("Error getting stock: ", ex)
-
-    def update_stock(self, cproducto, cantidad):
-        try:
-            self.db.execute(f"UPDATE Stock SET cantidad = {cantidad} WHERE cproducto = {cproducto}")
+            self.db.execute(f"UPDATE Usuario SET nombre = '{nombre}', password = '{password}',"
+                            "articulos_adquiridos = '{articulos_adquiridos}' WHERE nombre_usuario = '{nombre_usuario}'")
             self.db.commit()
+            return True
         except Exception as ex:
-            print("Error updating stock: ", ex)
+            print("Error updating usuario: ", ex)
             self.db.rollback()
+            return False
 
-    def delete_stock(self, cproducto):
+    def update_saldo(self, nombre_usuario, saldo):
         try:
-            self.db.execute(f"DELETE FROM Stock WHERE cproducto = {cproducto}")
+            self.db.execute(f"UPDATE Usuario SET saldo = {saldo} WHERE nombre_usuario = '{nombre_usuario}'")
             self.db.commit()
+            return True
         except Exception as ex:
-            print("Error deleting stock: ", ex)
+            print("Error updating saldo: ", ex)
             self.db.rollback()
-
-    def get_cantidad_stock(self, cproducto):
-        try:
-            self.db.execute(f"SELECT cantidad FROM Stock WHERE cproducto = {cproducto}")
-            return self.db.fetchone()
-        except Exception as ex:
-            print("Error getting cantidad stock: ", ex)
-
-
-
-
-
-    def get_pedido(self):
-        try:
-            self.db.execute("SELECT * FROM Pedido")
-            return self.db.fetchall()
-        except Exception as ex:
-            print("Error getting pedido: ", ex)
-
-    def get_pedido_by_id(self, cpedido):
-        try:
-            self.db.execute(f"SELECT * FROM Pedido WHERE cpedido = {cpedido}")
-            return self.db.fetchone()
-        except Exception as ex:
-            print("Error getting pedido: ", ex)
-
-    def insert_pedido(self, ccliente, fecha_pedido):
-        try:
-            self.db.execute(f"INSERT INTO Pedido(Ccliente, Fecha_pedido) VALUES ({ccliente}, STR_TO_DATE('{fecha_pedido}', '%Y-%m-%d'))")
-            self.db.commit()
+            return False
             
-        except Exception as ex:
-            print("Error inserting pedido: ", ex)
-            self.db.rollback()
-
-    def delete_pedido(self, cpedido):
+    def delete_usuario(self, nombre_usuario):
         try:
-            self.db.execute(f"DELETE FROM Pedido WHERE cpedido = {cpedido}")
+            self.db.execute(f"DELETE FROM Usuario WHERE nombre_usuario = '{nombre_usuario}'")
             self.db.commit()
+            return True
         except Exception as ex:
-            print("Error deleting pedido: ", ex)
+            print("Error deleting usuario: ", ex)
             self.db.rollback()
+            return False
 
 
-    def update_pedido(self, cpedido, ccliente, fecha_pedido):
+
+    def get_perfil_by_id(self, nombre_usuario, email):
         try:
-            self.db.execute(f"UPDATE Pedido SET ccliente = {ccliente}, fecha_pedido = STR_TO_DATE('{fecha_pedido}', '%Y-%m-%d') WHERE cpedido = {cpedido}")
-            self.db.commit()
-        except Exception as ex:
-            print("Error updating pedido: ", ex)
-            self.db.rollback()
-
-
-
-    def get_detalle_pedido(self):
-        try:
-            self.db.execute("SELECT * FROM Detalle_Pedido")
-            return self.db.fetchall()
-        except Exception as ex:
-            print("Error getting detalle: ", ex)
-
-    def get_detalle_pedido_by_id(self, cpedido, cproducto):
-        try:
-            self.db.execute(f"SELECT * FROM Detalle_Pedido WHERE cpedido = {cpedido} AND cproducto = {cproducto}")
+            self.db.execute(f"SELECT * FROM Perfil WHERE Nombre_Usuario = '{nombre_usuario}' AND Email = '{email}'")
             return self.db.fetchone()
         except Exception as ex:
-            print("Error getting detalle: ", ex)
-            
-    def delete_detalle_pedido(self, cpedido, cproducto):
-        try:
-            self.db.execute(f"DELETE FROM Detalle_Pedido WHERE cpedido = {cpedido} AND cproducto = {cproducto}")
-            self.db.commit()
-        except Exception as ex:
-            print("Error deleting detalle pedido: ", ex)
-            self.db.rollback()
+            print("Error getting perfil: ", ex)
 
-    def insert_detalle_pedido(self, cpedido, cproducto, cantidad):
+    def insert_perfil(self, nombre_usuario, email, fotografia, biografia, logros, articulos_adquiridos):
         try:
-            self.db.execute(f"INSERT INTO Detalle_Pedido VALUES ({cpedido}, {cproducto}, {cantidad})")
-            self.db.commit()
+            self.db.execute(f"INSERT INTO Perfil VALUES ('{nombre_usuario}', '{email}', '{fotografia}',"
+                            "'{biografia}', '{logros}', '{articulos_adquiridos}')")
+            return True
         except Exception as ex:
-            print("Error inserting detalle pedido: ", ex)
+            print("Error inserting perfil: ", ex)
             self.db.rollback()
+            return False
 
+    def update_perfil(self, nombre_usuario, email, fotografia, biografia, logros, articulos_adquiridos):
+        try:
+            self.db.execute(f"UPDATE Perfil SET fotografia = '{fotografia}', biografia = '{biografia}',"
+                            "logros = '{logros}', articulos_adquiridos = '{articulos_adquiridos}'"
+                            "WHERE nombre_usuario = '{nombre_usuario}' AND email = '{email}'")
+            self.db.commit()
+            return True
+        except Exception as ex:
+            print("Error updating perfil: ", ex)
+            self.db.rollback()
+            return False
+
+    def delete_perfil(self, nombre_usuario, email):
+        try:
+            self.db.execute(f"DELETE FROM Perfil WHERE nombre_usuario = '{nombre_usuario}' AND email = '{email}'")
+            self.db.commit()
+            return True
+        except Exception as ex:
+            print("Error deleting perfil: ", ex)
+            self.db.rollback()
+            return False
+
+
+    def get_amistad_by_id(self, nombre_usuario):
+        try:
+            self.db.execute(f"SELECT * FROM Amistad WHERE Nombre_Usuario = '{nombre_usuario}'")
+            return self.db.fetchone()
+        except Exception as ex:
+            print("Error getting amistad: ", ex)
+
+    def insert_amistad(self, nombre_usuario, amigo):
+        try:
+            self.db.execute(f"INSERT INTO Amistad VALUES ('{nombre_usuario}', '{amigo}', {false})")
+            return True
+        except Exception as ex:
+            print("Error inserting amistad: ", ex)
+            self.db.rollback()
+            return False
+
+    def accept_amistad(self, nombre_usuario, amigo):
+        try:
+            self.db.execute(f"UPDATE Amistad SET aceptada = {true} WHERE nombre_usuario = '{nombre_usuario}' AND amigo = '{amigo}'")
+            self.db.commit()
+            return True
+        except Exception as ex:
+            print("Error accepting amistad: ", ex)
+            self.db.rollback()
+            return False
+
+    def delete_amistad(self, nombre_usuario, amigo):
+        try:
+            self.db.execute(f"DELETE FROM Amistad WHERE nombre_usuario = '{nombre_usuario}' AND amigo = '{amigo}'")
+            self.db.commit()
+            return True
+        except Exception as ex:
+            print("Error deleting amistad: ", ex)
+            self.db.rollback()
+            return False
+    
      

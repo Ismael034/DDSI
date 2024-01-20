@@ -8,13 +8,6 @@ class dev:
         self.db.connect()
         self.db.rollback()     
 
-    def get_tables(self):
-        try:
-            self.db.execute("SELECT table_name FROM information_schema.tables WHERE table_schema = DATABASE()")
-            return self.db.fetchall()
-        except Exception as ex:
-            print("Error getting tables: ", ex)
-
     def delete_tables(self):
         try:
             self.db.execute("DROP TABLE Creacion")

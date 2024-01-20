@@ -1,10 +1,10 @@
 import json
-from flask import request, jsonify, Blueprint, current_app
-import app.query as query
+import logging
+import app.query.social as query
 import app.database as database
-import datetime
+from flask import request, jsonify, Blueprint, current_app
 
-pedido = Blueprint('pedido', __name__)
+social = Blueprint('social', __name__)
 db = database.database()
 q = query.query(db)
 
