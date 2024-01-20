@@ -35,13 +35,11 @@ class dev:
             self.db.execute("CREATE TABLE Creacion ("
                             "Titulo_Creacion VARCHAR(100),"
                             "Tipo VARCHAR(16),"
-                            "Videojuego_Asociado VARCHAR(100),"
                             "Nombre_Usuario VARCHAR(20),"
                             "NumDescargas INTEGER,"
                             "Fecha_Subida DATE,"
                             "Modificacion_activada BOOLEAN,"
                             "FOREIGN KEY (Titulo_Creacion) REFERENCES Articulo(Titulo),"
-                            "FOREIGN KEY (Videojuego_Asociado) REFERENCES Articulo(Titulo),"
                             "FOREIGN KEY (Nombre_Usuario) REFERENCES Usuario(Nombre_Usuario),"
                             "PRIMARY KEY (Titulo_Creacion))")
         
@@ -85,15 +83,10 @@ class dev:
             return False
   
         
-    def subir_creacion(self, titulo, tipo, vid, usu, fecha):
+    def subir_creacion(self, titulo, tipo, usu, fecha):
         try:
-            self.db.execute(f"INSERT INTO Creacion(Titulo_Creacion) VALUES ({titulo})")
-            self.db.execute(f"INSERT INTO Creacion(Tipo) VALUES ({tipo})")
-            self.db.execute(f"INSERT INTO Creacion(Videojuego_Asociado) VALUES ({vid})")
-            self.db.execute(f"INSERT INTO Creacion(Nombre_Usuario) VALUES ({usu})")
-            self.db.execute(f"INSERT INTO Creacion(NumDescargas) VALUES ({0})")
-            self.db.execute(f"INSERT INTO Creacion(Fecha_Subida) VALUES ({fecha})")
-            self.db.execute("INSERT INTO Creacion(Modificacion_activada) VALUES (0)")
+        
+            self.db.execute(f"INSERT INTO Creacion(Titulo_Creacion,Tipo,Nombre_Usuario,NumDescargas,Fecha_Subida,Modificacion_activada) VALUES ('{titulo}', '{tipo}', '{usu}', '0', '{fecha}', '0')")
             self.db.commit()
             return True
         except Exception as ex:
@@ -103,32 +96,32 @@ class dev:
 
     def consulta_creacion(self, nomb):
         try:
-            self.db.execute(f"SELECT * FROM Creacion WHERE Titulo_Creacion = {nomb}")
+            self.db.execute(f"SELECT * FROM Creacion WHERE Titulo_Creacion = '{nomb}'")
             return self.db.fetchall()
         except Exception as ex:
             logging.error("Error consulta creacion: ", ex)
 
     def listar_creaciones(self, t):
         try:
-            self.db.execute(f"SELECT Titulo_Creacion FROM Creacion WHERE Tipo = {t}")
+            self.db.execute(f"SELECT Titulo_Creacion FROM Creacion WHERE Tipo = '{t}'")
             return self.db.fetchone()
         except Exception as ex:
             logging.error("Error listar creaciones: ", ex)
 
     def borrar_creacion(self, nomb, usr):
         try:
-            self.db.execute(f"DELETE FROM Creacion WHERE Titulo_Creacion = {nomb} AND Nombre_Usuario = {usr}")
+            self.db.execute(f"DELETE FROM Creacion WHERE Titulo_Creacion = '{nomb}' AND Nombre_Usuario = '{usr}'")
             self.db.commit()
         except Exception as ex:
             logging.error("Error deleting creacion: ", ex)
             self.db.rollback()
 
     def activar_mod(self, nomb):
-        self.db.execute(f"SELECT Tipo FROM Creacion WHERE Titulo_Creacion = {nomb}")
-        a = self.db.fetchone()
-        if a == "Modificacion":
+        self.db.execute(f"SELECT Tipo FROM Creacion WHERE Titulo_Creacion = '{nomb}'")
+        a = self.db.fetchone()[0]
+        if a == "Modificacion" or a == "mod" or a == "modificacion":
             try:
-                self.db.execute(f"UPDATE Creacion SET Modificacion_activada = 1 WHERE Titulo_Creacion = {nomb}")
+                self.db.execute(f"UPDATE Creacion SET Modificacion_activada = 1 WHERE Titulo_Creacion = '{nomb}'")
             except Exception as ex:
                 logging.error("Error al activar modificación",ex)
                 self.db.rollback()
