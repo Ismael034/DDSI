@@ -18,7 +18,7 @@ def query_consulta_creacion(titulo_creacion):
     result = q_dev.consulta_creacion(titulo_creacion)
     return jsonify(result)
     
-@dev.route('/creacion/<tipo>', methods=['GET'])
+@dev.route('/creacion/tipo/<tipo>', methods=['GET'])
 def query_listar_creaciones(tipo):
  
     result = q_dev.listar_creaciones(tipo)
@@ -31,7 +31,6 @@ def query_subir_creacion():
 
         titulo = record['titulo_creacion']
         tipo = record['tipo']
-        vid = record['videojuego_asociado']
         usu = record['nombre_usuario']
         fecha = record['fecha_subida']
         
@@ -39,12 +38,12 @@ def query_subir_creacion():
         descripcion_larga = record['descripcion_larga']
         genero = record['genero']
         icono = record['icono']
-        tamaño = record['tamaño']
+        tamano = record['tamano']
         ruta_ejecutable = record['ruta_ejecutable']
         especificaciones = record['especificaciones']
       
-        q_articulo.subir_articulo(titulo, tamaño, descripcion_corta, descripcion_larga, genero, icono, ruta_ejecutable, especificaciones)
-        q_dev.subir_creacion(titulo, tipo, vid, usu, fecha)
+        q_articulo.subir_articulo(titulo, tamano, descripcion_corta, descripcion_larga, genero, icono, ruta_ejecutable, especificaciones)
+        q_dev.subir_creacion(titulo, tipo, usu, fecha)
         db.commit()
 
         result = jsonify({'message': 'creacion subida'})
@@ -55,13 +54,15 @@ def query_subir_creacion():
         return jsonify({'error': 'error subiendo creacion'})
 
     
-@dev.route('/creacion/<titulo_creacion>/delete', methods=['POST'])
-def query_borrar_creacion(titulo_creacion):
+@dev.route('/creacion/delete', methods=['POST'])
+def query_borrar_creacion():
     try:
-        if titulo_creacion is None:
-            return jsonify({'error': 'invalid values'}), 400
-
-        q_dev.borrar_creacion(titulo_creacion)
+        record = json.loads(request.data)
+	
+        titulo = record['titulo_creacion']
+        usu = record['nombre_usuario']
+        
+        q_dev.borrar_creacion(titulo, usu)
         db.commit()
         
         result = jsonify({'message': 'creacion eliminada'})
@@ -69,3 +70,15 @@ def query_borrar_creacion(titulo_creacion):
     except Exception as ex:
         logging.error("Error deleting creacion: ", ex)
         return jsonify({'error': 'error deleting creacion'})
+        
+@dev.route('/creacion/<titulo_creacion>/activar', methods=['POST'])
+def query_activar_mod(titulo_creacion):
+    try:        
+        q_dev.activar_mod(titulo_creacion)
+        db.commit()
+        
+        result = jsonify({'message': 'mod activado'})
+        return result
+    except Exception as ex:
+        logging.error("Error activating mod: ", ex)
+        return jsonify({'error': 'error activating mod'})       
