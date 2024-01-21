@@ -48,7 +48,7 @@ class dev:
                             "BEGIN "
                             "DECLARE tipo_creacion VARCHAR(16); "
                             "SET tipo_creacion = (SELECT Tipo FROM Creacion WHERE Titulo_Creacion = NEW.Titulo_Creacion); "
-                            "IF tipo_creacion != MOD_JUGABLE and tipo_creacion != MOD_GRAFICO and tipo_creacion != TEXTURE_PACK and tipo_creacion != BETA and tipo_creacion != DEMO and tipo_creacion != FANGAME and tipo_creacion != JUEGO_COMPLETO THEN "
+                            "IF tipo_creacion != 'MOD_JUGABLE' and tipo_creacion != 'MOD_GRAFICO' and tipo_creacion != 'TEXTURE_PACK' and tipo_creacion != 'BETA' and tipo_creacion != 'DEMO' and tipo_creacion != 'FANGAME' and tipo_creacion != 'JUEGO_COMPLETO' THEN "
                             "   SIGNAL SQLSTATE '45000' "
                             "   SET MESSAGE_TEXT = 'Error: La creacion subida no tiene un tipo valido'; "
                             "END IF; "
