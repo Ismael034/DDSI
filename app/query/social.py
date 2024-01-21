@@ -49,7 +49,7 @@ class social:
                             "Nombre VARCHAR(20),"
                             "Password VARCHAR(100),"
                             "Activo BOOLEAN,"
-                            "Articulos_adquiridos VARCHAR(20))")
+                            "Articulos_adquiridos VARCHAR(200))")
 
         except Exception as ex:
             logging.error("Error creating usuario table:", ex)
