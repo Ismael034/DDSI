@@ -76,8 +76,9 @@ def comprar_videojuego(cvideojuego):
   record = json.loads(request.data)
   nombre_usuario = record['nombre_usuario']
   result = q.comprar_videojuego(cvideojuego, nombre_usuario)
-  result2 = q_articulo.anadir_articulo_obtenido(nombre_usuario, cvideojuego)
-  return jsonify(result)
+  if(result[1] == True):
+    q_articulo.anadir_articulo_obtenido(nombre_usuario, cvideojuego)
+  return jsonify(result[0])
 
 #Añadir saldo a un usuario
 @tienda.route('/tienda/add-saldo/<cusuario>', methods=['POST'])

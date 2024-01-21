@@ -44,10 +44,22 @@ class tienda:
                             "PRIMARY KEY (Titulo_Videojuego, Nombre_Usuario))")
             
             self.db.execute("CREATE TRIGGER actualizar_saldo AFTER INSERT ON Compra "
-                                "FOR EACH ROW "
-                                "BEGIN "
-                                "UPDATE Usuario SET Saldo = Saldo - (SELECT Precio FROM Videojuego WHERE Titulo_Videojuego = NEW.Titulo_Videojuego) WHERE Nombre_Usuario = NEW.Nombre_Usuario; "
-                                "END;")
+                            "FOR EACH ROW "
+                            "BEGIN "
+                            "DECLARE precio_videojuego DECIMAL(10, 2); "
+                            "DECLARE saldo_actual DECIMAL(10, 2); "
+                            "SET precio_videojuego = (SELECT Precio FROM Videojuego WHERE Titulo_Videojuego = NEW.Titulo_Videojuego); "
+                            "SET saldo_actual = (SELECT Saldo FROM Usuario WHERE Nombre_Usuario = NEW.Nombre_Usuario); "
+                            "IF saldo_actual >= precio_videojuego THEN "
+                            "   UPDATE Usuario SET Saldo = Saldo - precio_videojuego WHERE Nombre_Usuario = NEW.Nombre_Usuario; "
+                            "ELSE "
+                            "   SIGNAL SQLSTATE '45000' "
+                            "   SET MESSAGE_TEXT = 'Error: Saldo insuficiente para realizar la compra'; "
+                            "END IF; "
+                            "END;"
+                        )
+
+
 
         
         except Exception as ex:
@@ -108,8 +120,10 @@ class tienda:
             self.db.commit()
             self.db.execute(f"SELECT Saldo FROM Usuario WHERE Nombre_Usuario = '{nombre_usuario}'")
             saldo_actualizado = self.db.fetchone()[0]
-            return saldo_actualizado
+            return saldo_actualizado, True
         except Exception as ex:
+            if "Saldo insuficiente" in str(ex):
+                return "Saldo insuficiente", False
             logging.error("Error comprando videojuego: ", ex)
             self.db.rollback()
             return False
