@@ -192,7 +192,7 @@ class social:
 
     def get_amistad_by_id(self, nombre_usuario):
         try:
-            self.db.execute(f"SELECT * FROM Amistad WHERE Nombre_Usuario = '{nombre_usuario}'")
+            self.db.execute(f"SELECT * FROM Amistad WHERE Nombre_Usuario = '{nombre_usuario}' OR Amigo = '{nombre_usuario}'")
             return self.db.fetchall()
         except Exception as ex:
             logging.error("Error getting amistad: ", ex)
@@ -210,7 +210,7 @@ class social:
 
     def accept_amistad(self, nombre_usuario, amigo):
         try:
-            self.db.execute(f"UPDATE Amistad SET aceptada = TRUE WHERE nombre_usuario = '{nombre_usuario}' AND amigo = '{amigo}'")
+            self.db.execute(f"UPDATE Amistad SET aceptada = TRUE WHERE amigo = '{nombre_usuario}' AND nombre_usuario = '{amigo}'")
             self.db.commit()
             return True
         except Exception as ex:
@@ -220,7 +220,7 @@ class social:
 
     def delete_amistad(self, nombre_usuario, amigo):
         try:
-            self.db.execute(f"DELETE FROM Amistad WHERE nombre_usuario = '{nombre_usuario}' AND amigo = '{amigo}'")
+            self.db.execute(f"DELETE FROM Amistad WHERE (nombre_usuario = '{nombre_usuario}' AND amigo = '{amigo}') OR (nombre_usuario = '{amigo}' AND amigo = '{nombre_usuario}')")
             self.db.commit()
             return True
         except Exception as ex:

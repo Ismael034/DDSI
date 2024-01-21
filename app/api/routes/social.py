@@ -3,6 +3,7 @@ import logging
 import app.query.social as query
 import app.database as database
 from flask import request, jsonify, Blueprint, current_app
+import logging
 
 social = Blueprint('social', __name__)
 db = database.database()
@@ -134,9 +135,13 @@ def accept_amigo(usuario):
             return jsonify({'error': 'invalid values'}), 400
 
         amistad = q.get_amistad_by_id(usuario)
-        if amistad is None:
+        if len(amistad) == 0:
             return jsonify({'error': 'amistad no existe'}), 400
 
+        # Check not accept request from self
+        if amistad[0][1] != usuario:
+            return jsonify({'error': 'amistad no existe'}), 400
+            
         q.accept_amistad(usuario, amigo)
         return jsonify({'message': 'amigo aceptado'})
 
@@ -159,6 +164,13 @@ def add_amigo(usuario):
 
         if amigo is None:
             return jsonify({'error': 'amigo no existe'}), 400
+        
+        
+        amistad = q.get_amistad_by_id(usuario)
+        logging.error(amistad)
+        
+        if len(amistad) > 0: 
+            return jsonify({'error': 'ya son amigos'}), 400
 
         q.insert_amistad(usuario, amigo)
         return jsonify({'message': 'solicitud enviada'})

@@ -121,7 +121,7 @@ def amigos():
             response = requests.post('http://localhost:5000/user/{}/amigos/add'.format(gv.nombre_usuario), json={'amigo': amigo})
             if response.status_code == 200:
                 # If error in response
-                if response.json()['error'] is not None:
+                if 'error' in response.json():
                     console.print("Error Añadiendo amigos", style="bold red")
                 else:
                     console.print("Amigo agregado exitosamente", style="green")
@@ -133,7 +133,7 @@ def amigos():
             amigo = Prompt.ask("Ingresa el nombre del amigo")
             response = requests.post('http://localhost:5000/user/{}/amigos/delete'.format(gv.nombre_usuario), json={'amigo': amigo})
             if response.status_code == 200:
-                if response.json()['error'] is not None:
+                if 'error' in response.json():
                     console.print("Error borrando amigos", style="bold red")
                 else:
                     console.print("Amigo eliminado exitosamente", style="green")
@@ -145,7 +145,7 @@ def amigos():
             amigo = Prompt.ask("Ingresa el nombre del amigo")
             response = requests.post('http://localhost:5000/user/{}/amigos/accept'.format(gv.nombre_usuario), json={'amigo': amigo})
             if response.status_code == 200:
-                if response.json()['error'] is not None:
+                if 'error' in response.json():
                     console.print("Error Añadiendo amigos", style="bold red")
                 else:
                     console.print("Solicitud aceptada exitosamente", style="green")
