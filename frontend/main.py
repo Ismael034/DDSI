@@ -36,7 +36,10 @@ def main():
         
         
         if opcion == 0:
-            tienda.show_menu_tienda()
+            if gv.sesion_iniciada:
+                tienda.show_menu_tienda()
+            else:
+                tienda.show_menu_tienda_not_logged()
         elif opcion == 1:
             if gv.sesion_iniciada:
                 biblioteca.show_menu_biblioteca()
