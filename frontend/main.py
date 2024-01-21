@@ -36,11 +36,20 @@ def main():
         if opcion == 0:
             tienda.show_menu_tienda()
         elif opcion == 1:
-            biblioteca.show_menu_biblioteca()
+            if gv.sesion_iniciada:
+                biblioteca.show_menu_biblioteca()
+            else:
+                console.print("No has iniciado sesión", style="bold red")
         elif opcion == 2:
-            social.show_menu_social()
+            if gv.sesion_iniciada:
+                social.show_menu_social()
+            else:
+                social.show_menu_social_not_logged()
         elif opcion == 3:
-            dev.show_menu_dev()
+            if gv.sesion_iniciada:
+                dev.show_menu_dev()
+            else:
+                console.print("No has iniciado sesión", style="bold red")
         elif opcion == 4:
             break
         
