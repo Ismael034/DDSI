@@ -14,12 +14,6 @@ def query_articulo(titulo):
     result = q.consultar_articulo(titulo)
     return jsonify(result)
 
-@articulo.route('/articulo/<titulo>/<cproducto>', methods=['GET'])
-def query_detalle_pedido_by_id(cpedido, cproducto):    
-    result = q.get_detalle_pedido_by_id(cpedido, cproducto)
-    return jsonify(result)
-    
-
 @articulo.route('/articulo/', methods=['POST'])
 def insert_articulo():
     try:
@@ -27,67 +21,50 @@ def insert_articulo():
 
         titulo = record['titulo']
 
-        if q.consultar_articulo(titulo) != None:
-            return jsonify({'error':'articulo con ese titulo ya existe'}), 400
-
         tamano = record['tamaño']
         desc = record['descripcion_corta']
         desl = record['descripcion_larga']
         genero = record['genero']
         icono = record['icono']
-        est = record['estadisticas']
         eje = record['ejecutable']
         esp = record['especificaciones']
 
         # Check values are valid
-        if not isinstance(titulo, str) or not isinstance(tamano, str) or not isinstance(desc, str)\
-            or not isinstance(desl,str) or not isinstance(genero,str) or not isinstance(icono,str)\
-            or not isinstance(est,str) or not isinstance(eje,str) or not isinstance(esp,str):
+        if not isinstance(titulo, str) or not isinstance(tamano, str) or not isinstance(desc, str) or not isinstance(desl,str) or not isinstance(genero,str) or not isinstance(icono,str) or not isinstance(eje,str) or not isinstance(esp,str):
             return jsonify({'error': 'articulo invalid values'}), 400
-
-        # Check if pedido exists
+        
         articulo = q.consultar_articulo(titulo)
         if articulo is None:
             return jsonify({'error': 'articulo does not exist'}), 400
         
         q.subir_articulo(titulo,tamano,desc,desl,genero,icono,eje,esp)
         
+        return jsonify({'mensaje':'Articulo subido exitosamente'})
+        
     except Exception as ex:
         logging.error("Error inserting Articulo: ", ex)
         return jsonify({'error': 'error inserting Articulo'})
+    
 
-
-@articulo.route('/detalle_pedido/delete', methods=['POST'])
-def delete_detalle_pedido():
+@articulo.route('/articulo/delete', methods=['POST'])
+def delete_articulo():
     try:
         # Check if pedido exists
         record = json.loads(request.data)
-        cproducto = record['cproducto']
-        cpedido = record['cpedido']
+        titulo = record['titulo']
 
-        if cpedido is None or cproducto is None:
-            return jsonify({'error': 'invalid values'}), 400
+        if titulo is None:
+            return jsonify({'error': 'invalid titulo'}), 400
 
-        pedido = q.get_pedido_by_id(cpedido)
-        if pedido is None:
-            return jsonify({'error': 'pedido does not exist'}), 400
-        
-        # Check if producto exists
-        stock = q.get_stock_by_id(cproducto)[1]
-        if stock is None:
-            return jsonify({'error': 'producto does not exist'}), 400
+        articulo = q.consultar_articulo(titulo)
+        if articulo is None:
+            return jsonify({'error': 'articulo does not exist'}), 400
 
-        # Check if producto is in pedido
-        detalle_pedido = q.get_detalle_pedido_by_id(cpedido, cproducto)
-        if detalle_pedido is None:
-            return jsonify({'error': 'producto is not in pedido'}), 400
-
-        # Delete detalle pedido
-        q.delete_detalle_pedido(cpedido, cproducto)
-
-        result = jsonify({'message': 'detalle pedido deleted'})
+        # Delete articulo
+        q.eliminar_articulo(titulo)
+        result = jsonify({'message': 'Articulo deleted'})
         return result
 
     except Exception as ex:
-        logging.error("Error deleting detalle pedido: ", ex)
-        return jsonify({'error': 'error deleting detalle pedido'})
+        logging.error("Error deleting articulo: ", ex)
+        return jsonify({'error': 'error deleting articulo'})
