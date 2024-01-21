@@ -83,12 +83,16 @@ def get_amigos():
             console.print("No tienes amigos :(", style="bold red")
         else:
             table = Table(title="Amigos")
-            table.add_column("Nombre de usuario")
-            table.add_column("Foto de perfil")
-            table.add_column("Biografia")
-            table.add_column("Logros")
+            table.add_column("Usuario")
+            table.add_column("Amigo")
+            table.add_column("Confirmado")
+            
             for amigo in response.json():
-                table.add_row(amigo[0], amigo[1], amigo[2], amigo[3])
+                if amigo[2] == 0:
+                    confirmado = "No"
+                else:
+                    confirmado = "Si"
+                table.add_row(amigo[0], amigo[1], confirmado)
             console.print(table)
     else:
         console.print(f"Error al mostrar amigos", style="bold red")
@@ -115,6 +119,7 @@ def amigos():
             amigo = Prompt.ask("Ingresa el nombre del amigo")
             response = requests.post('http://localhost:5000/user/{}/amigos/add'.format(gv.nombre_usuario), json={'amigo': amigo})
             if response.status_code == 200:
+                # If error
                 console.print("Amigo agregado exitosamente", style="green")
                 get_amigos()
             else:
