@@ -1,6 +1,6 @@
 ![Logo](img/swadit.png)
 
-# Seminario 2 DDSI SWAD Interactive
+# Práctica 3 DDSI SWAD Interactive
 
 Participantes:
 - Alejandro Escobar Martínez
@@ -10,7 +10,7 @@ Participantes:
 
 ### Instalación y ejecución
 
-Para ejecutar el seminario se debe tener python y pip instalado e instalar las bibliotecas de python ejecutando
+Para ejecutar la práctica se debe tener python y pip instalado e instalar las bibliotecas de python ejecutando
 
 ```
 pip3 install -r requirements.txt
@@ -44,29 +44,3 @@ Para poder acceder a la base de datos de una manera sencilla, se incluye en el a
 - Database: `swad`
 - User name: `root`
 - Password: `acanas23`
-
-
-## Uso de la API
-
-Los endpoints de la API serán los siguientes:
-
-- /stock
-    - `/`. Obtener todo el stock. GET
-    - `/stock/<cproducto>`. Obtener stock dado un id de producto. GET
-    - `/stock/`. Insertar nuevo stock. POST
-    - `/stock/<cproducto>/update`. Actualizar el stock dado un id. POST
-    - `/stock/<cproducto>/delete`. Eliminar stock dado un id. POST
-
-- /pedido
-    - `/`. Obtener todo los pedidos. GET
-    - `/pedido/<cpedido>`. Obtener pedido dado un id de pedido. GET
-    - `/pedido/`. Insertar nuevo pedido. POST
-    - `/pedido/<cpedido>/update`. Actualizar el pedido dado un id de pedido. POST
-    - `/pedido/<cpedido>/delete`. Eliminar pedido dado un id. POST
-
-- /detalle_pedido
-    - `/`. Obtener todo los detalles de pedido. GET
-    - `/detalle_pedido/<cpedido>/<cproducto>`. Obtener stock dado un id de producto. GET
-    - `/detalle_pedido/`. Insertar nuevo detalle de pedido. POST
-    - `/detalle_pedido/update`. Actualizar los detalles de un pedido dado un cproducto y cpedido. POST
-    - `/detalle_pedido/delete`. Eliminar los detalles de un pedido dado un cproducto y cpedido. POST
