@@ -29,23 +29,19 @@ def insert_valoracion():
         user = record['nombre_usuario']
         p = record['puntuacion']
         c = record['comentario']
-
-        # Check values are valid
-        if not isinstance(titulo, str) or not isinstance(user, str) or not isinstance(p,int) or not isinstance(c,str):
-            return jsonify({'error': 'articulo invalid values'}), 400
-        
+       
         #comprobar que user exista
         if s.get_usuario_by_id(user) is None:
-            return jsonify({'error': 'Usuario no encontrado para valoracion'}), 400
+            return jsonify({'error': 'Usuario no encontrado para valoracion'}), 401
         
         if q.consultar_articulo(titulo) is None:
-            return jsonify({'error': 'articulo no encontrado para valoracion'}), 400
+            return jsonify({'error': 'articulo no encontrado para valoracion'}), 402
 
         if q.consultar_articulo_obtenido(user,titulo) is None:
-            return jsonify({'error': 'El usuario no puede comentar este artículo NO adquirido'}), 400
+            return jsonify({'error': 'El usuario no puede comentar este artículo NO adquirido'}), 403
 
         if p > 5 or p <= 0:
-            return jsonify({'error': 'Puntuacion no válida [debe estar entre 1-5]'}), 400
+            return jsonify({'error': 'Puntuacion no válida [debe estar entre 1-5]'}), 409
 
         q.comentar(user,titulo,p,c)
 

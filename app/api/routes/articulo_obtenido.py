@@ -8,21 +8,17 @@ articulo_obtenido = Blueprint('articulo_obtenido', __name__)
 db = database.database()
 q = query.articulo(db)
 
-@articulo_obtenido.route('/articulo_obtenido/<nombre_usuario>', methods=['GET'])
+@articulo_obtenido.route('/articulo_obtenido/<nombre_usuario>/<n>', methods=['GET'])
 def query_articulos_by_nombre(nombre_usuario,n):
     #Pasar numero de consultas n
-    n=4
     result = q.consultar_articulos(nombre_usuario,n)
     return jsonify(result)
 
-@articulo_obtenido.route('/articulo_obtenido/<nombre_usuario>/<titulo>', methods=['GET'])
-def query_articulos(nombre_usuario,titulo):
-        
-    record = json.loads(request.data)
-    titulo = record['titulo']
-    nombre_usuario = record['nombre_usuario']
-
+@articulo_obtenido.route('/articulo_obtenido/<nombre_usuario>/1/<titulo>', methods=['GET'])
+def query_articulo(nombre_usuario,titulo):
     result = q.consultar_articulo_obtenido(nombre_usuario,titulo)
+    if result is None:
+        return jsonify({'error':'Articulo no encontrado'})
     return jsonify(result)
 
 @articulo_obtenido.route('/articulo_obtenido/', methods=['POST'])
@@ -44,6 +40,28 @@ def insert_articulo_obtenido():
     except Exception as ex:
         logging.error("Error inserting Articulo obtenido: ", ex)
         return jsonify({'error': 'error inserting Articulo obtenido'})
+    
+
+@articulo_obtenido.route('/articulo_obtenido/<user>/<titulo>/exe', methods=['POST'])
+def ejecuta_articulo_obtenido(user,titulo):
+    try:
+        record = json.loads(request.data)
+
+        titulo = record['titulo']
+        user = record['nombre_usuario']
+
+        # Check values are valid
+        if not isinstance(titulo, str) or not isinstance(user, str):
+            return jsonify({'error': 'articulo invalid values'}), 400
+        #q.consultar_articulo_obtenido(user,titulo)
+        #est = json({"ttotal":10,"tmedio":1})
+        q.ejecuta(user,titulo)
+
+        return jsonify({'mensaje':'Articulo EJECUTADO exitosamente'})
+        
+    except Exception as ex:
+        logging.error("Error executing Articulo obtenido: ", ex)
+        return jsonify({'error': 'error executing Articulo obtenido'})
     
 
 @articulo_obtenido.route('/articulo_obtenido/delete', methods=['POST'])

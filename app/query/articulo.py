@@ -76,7 +76,7 @@ class articulo:
                             "Nombre_usuario VARCHAR(20) REFERENCES Usuario(Nombre_Usuario),"
                             "Titulo_articulo VARCHAR(100) REFERENCES Articulo(Titulo),"
                             "Ult_vez_jugado DATETIME,"
-                            "Estadisticas VARCHAR(50),"
+                            "Estadisticas VARCHAR(150),"
                             "PRIMARY KEY (Nombre_usuario,Titulo_articulo))")
 
             self.db.execute("CREATE TRIGGER anadir_articulo_usuario AFTER INSERT ON Articulo_obtenido "
@@ -95,7 +95,8 @@ class articulo:
             
     def anadir_articulo_obtenido(self,user,articulo):
         try:
-            self.db.execute(f"INSERT INTO Articulo_obtenido(Nombre_usuario,Titulo_articulo) VALUES ('{user}','{articulo}')")
+            total = "Tiempo de juego total 0, Tiempo medio de juego por semana 0"
+            self.db.execute(f"INSERT INTO Articulo_obtenido(Nombre_usuario,Titulo_articulo,Estadisticas) VALUES ('{user}','{articulo}','{total}')")
             self.db.commit()
             return True
         except Exception as ex:
@@ -110,7 +111,8 @@ class articulo:
         except Exception as ex:
             logging.error("Error eliminar articulo obtenido: ", ex)
 
-    def consultar_articulos(self,user,n):
+    def consultar_articulos(self,user,nn):
+        n = int(nn)
         if n<0:
             n=0
         try:
@@ -128,7 +130,10 @@ class articulo:
 
     def ejecuta(self, user, juego):
         try:
-            self.db.execute(f"UPDATE Articulo_obtenido WHERE Nombre_usuario = '{user}' AND Titulo_articulo = '{juego}' SET Ult_vez_jugado = CURRENT_DATE")
+            #data = est.json.loads(est.data)
+            #total = "Tiempo de juego total "+data.record['ttotal']+", Tiempo medio de juego por semana "+data.record['tmedio']
+            total = "EJECUTADO"
+            self.db.execute(f"UPDATE Articulo_obtenido SET Ult_vez_jugado = NOW(), Estadisticas = '{total}' WHERE Nombre_usuario = '{user}' AND Titulo_articulo = '{juego}'")
             self.db.commit()
             return True
         except Exception as ex:
