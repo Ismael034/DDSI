@@ -21,7 +21,7 @@ def query_articulos(nombre_usuario,titulo):
     return jsonify(result)
 
 @valoracion.route('/valoracion/', methods=['POST'])
-def insert_valoracion(user,titulo):
+def insert_valoracion():
     try:
         record = json.loads(request.data)
 
@@ -44,10 +44,13 @@ def insert_valoracion(user,titulo):
         if q.consultar_articulo_obtenido(user,titulo) is None:
             return jsonify({'error': 'El usuario no puede comentar este artículo NO adquirido'}), 400
 
+        if p > 5 or p <= 0:
+            return jsonify({'error': 'Puntuacion no válida [debe estar entre 1-5]'}), 400
+
         q.comentar(user,titulo,p,c)
 
-        return jsonify({'mensaje':f'Valoracion de {user} subida para {titulo}'})
+        return jsonify({'mensaje':f"Valoracion de {user} subida para {titulo}"})
         
     except Exception as ex:
         logging.error("Error inserting Valoracion: ", ex)
-        return jsonify({'error': 'error inserting valoracion'})
+        return jsonify({'error': 'error inserting valoracion'}),400
