@@ -2,7 +2,7 @@
     "database_host": "mariadb",
     "database_port": 3306,
     "database_db": "swad",
-    "database_user": "admin",
-    "database_password": "admin",
+    "database_user": "root",
+    "database_password": "acanas23",
     "database_root_password": "acanas23"
 }
