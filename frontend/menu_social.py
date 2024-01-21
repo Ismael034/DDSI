@@ -24,7 +24,7 @@ def crear_usuario():
         mostrar_perfil()
         return True
     else:
-        console.print(f"Error al crear usuario: {response.text}", style="bold red")
+        console.print(f"Error al crear usuario", style="bold red")
         return False
 
 def iniciar_sesion():
@@ -32,12 +32,14 @@ def iniciar_sesion():
     nombre_usuario = Prompt.ask("Ingresa el nombre de usuario")
     password = Prompt.ask("Ingresa la contraseña")
 
-    response = requests.get('http://localhost:5000/user/{}/{}'.format(nombre_usuario, password))
+    response = requests.post('http://localhost:5000/user/login', json={'nombre_usuario': nombre_usuario, 'password': password})
     if response.status_code == 200:
         console.print("Sesión iniciada exitosamente", style="green")
         gv.set_nombre_usuario(nombre_usuario)
+        mostrar_perfil()
+        return True
     else:
-        console.print(f"Error al iniciar sesión: {response.text}", style="bold red")
+        console.print(f"Error al iniciar sesión", style="bold red")
 
 def mostrar_perfil():
     response = requests.get('http://localhost:5000/user/{}'.format(gv.nombre_usuario))
@@ -64,7 +66,7 @@ def modificar_perfil():
         console.print("Perfil modificado exitosamente", style="green")
         mostrar_perfil()
     else:
-        console.print(f"Error al modificar perfil: {response.text}", style="bold red")
+        console.print(f"Error al modificar perfil", style="bold red")
 
 def eliminar_usuario():
     response = requests.post('http://localhost:5000/user/{}/delete'.format(gv.nombre_usuario))
@@ -72,7 +74,24 @@ def eliminar_usuario():
         console.print("Usuario eliminado exitosamente", style="green")
         cerrar_sesion()
     else:
-        console.print(f"Error al eliminar usuario: {response.text}", style="bold red")
+        console.print(f"Error al eliminar usuario", style="bold red")
+
+def get_amigos():
+    response = requests.get('http://localhost:5000/user/{}/amigos'.format(gv.nombre_usuario))
+    if response.status_code == 200:
+        if response.json() is None:
+            console.print("No tienes amigos :(", style="bold red")
+        else:
+            table = Table(title="Amigos")
+            table.add_column("Nombre de usuario")
+            table.add_column("Foto de perfil")
+            table.add_column("Biografia")
+            table.add_column("Logros")
+            for amigo in response.json():
+                table.add_row(amigo[0], amigo[1], amigo[2], amigo[3])
+            console.print(table)
+    else:
+        console.print(f"Error al mostrar amigos", style="bold red")
 
 def amigos():
     while True:
@@ -90,28 +109,25 @@ def amigos():
     
         
         if opcion_amigos == 0:
-
-            response = requests.get('http://localhost:5000/user/{}/amigos'.format(gv.nombre_usuario))
-            if response.status_code == 200:
-                console.print(response.json(), style="green")
-            else:
-                console.print(f"Error al mostrar amigos: {response.text}", style="bold red")
+            get_amigos()
             pass
         elif opcion_amigos == 1:
             amigo = Prompt.ask("Ingresa el nombre del amigo")
-            response = requests.post('http://localhost:5000/user/{}/amigos'.format(gv.nombre_usuario), json={'amigo': amigo})
+            response = requests.post('http://localhost:5000/user/{}/amigos/add'.format(gv.nombre_usuario), json={'amigo': amigo})
             if response.status_code == 200:
                 console.print("Amigo agregado exitosamente", style="green")
+                get_amigos()
             else:
-                console.print(f"Error al agregar amigo: {response.text}", style="bold red")
+                console.print(f"Error al agregar amigo", style="bold red")
             pass
         elif opcion_amigos == 2:
             amigo = Prompt.ask("Ingresa el nombre del amigo")
-            response = requests.post('http://localhost:5000/user/{}/amigos/'.format(gv.nombre_usuario), json={'amigo': amigo})
+            response = requests.post('http://localhost:5000/user/{}/amigos/delete'.format(gv.nombre_usuario), json={'amigo': amigo})
             if response.status_code == 200:
                 console.print("Amigo eliminado exitosamente", style="green")
+                get_amigos()
             else:
-                console.print(f"Error al eliminar amigo: {response.text}", style="bold red")
+                console.print(f"Error al eliminar amigo", style="bold red")
             pass
         elif opcion_amigos == 3:
             break

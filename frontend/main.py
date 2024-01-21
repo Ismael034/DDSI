@@ -16,7 +16,9 @@ console = Console()
 ### Menu ###
 def main():
     gv.show_logo()
-    console.print("usuario: {}".format(gv.nombre_usuario), style="bold magenta")
+
+    if gv.sesion_iniciada:
+        console.print("usuario: {}".format(gv.nombre_usuario), style="bold magenta")
     while True:
         options = [
         "Tienda",
