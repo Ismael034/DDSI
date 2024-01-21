@@ -8,11 +8,15 @@ console = Console()
 
 def set_nombre_usuario(nuevo_nombre):
     global nombre_usuario
+    global sesion_iniciada
+    
     nombre_usuario = nuevo_nombre
     sesion_iniciada = True
 
 def cerrar_sesion():
     global nombre_usuario
+    global sesion_iniciada
+
     nombre_usuario = ''
     sesion_iniciada = False
     

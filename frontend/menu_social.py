@@ -103,6 +103,7 @@ def amigos():
         "Mostrar amigos",
         "Agregar amigo",
         "Eliminar amigo",
+        "Aceptar solicitud",
         "Volver al menú anterior",
         ]
         
@@ -119,9 +120,12 @@ def amigos():
             amigo = Prompt.ask("Ingresa el nombre del amigo")
             response = requests.post('http://localhost:5000/user/{}/amigos/add'.format(gv.nombre_usuario), json={'amigo': amigo})
             if response.status_code == 200:
-                # If error
-                console.print("Amigo agregado exitosamente", style="green")
-                get_amigos()
+                # If error in response
+                if response.json()['error'] is not None:
+                    console.print("Error Añadiendo amigos", style="bold red")
+                else:
+                    console.print("Amigo agregado exitosamente", style="green")
+                    get_amigos()
             else:
                 console.print(f"Error al agregar amigo", style="bold red")
             pass
@@ -129,12 +133,28 @@ def amigos():
             amigo = Prompt.ask("Ingresa el nombre del amigo")
             response = requests.post('http://localhost:5000/user/{}/amigos/delete'.format(gv.nombre_usuario), json={'amigo': amigo})
             if response.status_code == 200:
-                console.print("Amigo eliminado exitosamente", style="green")
-                get_amigos()
+                if response.json()['error'] is not None:
+                    console.print("Error borrando amigos", style="bold red")
+                else:
+                    console.print("Amigo eliminado exitosamente", style="green")
+                    get_amigos()
             else:
                 console.print(f"Error al eliminar amigo", style="bold red")
             pass
         elif opcion_amigos == 3:
+            amigo = Prompt.ask("Ingresa el nombre del amigo")
+            response = requests.post('http://localhost:5000/user/{}/amigos/accept'.format(gv.nombre_usuario), json={'amigo': amigo})
+            if response.status_code == 200:
+                if response.json()['error'] is not None:
+                    console.print("Error Añadiendo amigos", style="bold red")
+                else:
+                    console.print("Solicitud aceptada exitosamente", style="green")
+                    get_amigos()
+            else:
+                console.print(f"Error al aceptar solicitud", style="bold red")
+            pass
+
+        elif opcion_amigos == 4:
             break
         else:
             console.print("Opción no valida", style="bold red")
