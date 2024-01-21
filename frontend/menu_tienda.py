@@ -89,10 +89,10 @@ def comprar_videojuego():
     
     response = requests.post('http://127.0.0.1:5000/tienda/comprar/{}'.format(cvideojuego), json={'nombre_usuario': gv.nombre_usuario})
     
-    if response.status_code == 200:
-        console.print('Saldo total: ' + str(response.json()))
+    if response.status_code == 200 and response.json()[1] != False:
+        console.print('Saldo total: ' + str(response.json()[0]), style="green")
     else:
-        console.print(f"Error al comprar videojuego: {response.text}", style="bold red")
+        console.print(f"Error al borrar videojuego: {response.json()[0]}", style="bold red")
         
 def add_saldo():
     console.print("Añadir saldo a tu cuenta", style="bold magenta")
