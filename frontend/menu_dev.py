@@ -13,7 +13,7 @@ def subir_creacion():
     console.print("Subir Creación", style="bold magenta")
     titulo_creacion = Prompt.ask("Introduzca el titulo de la creación")
     tipo = Prompt.ask("Introduzca el tipo de la creación")
-    fecha_subida = Prompt.ask("Introduzca la fecha")
+    #fecha_subida = Prompt.ask("Introduzca la fecha")
     descripcion_corta = Prompt.ask("Introduzca la descripcion corta de la creación")
     descripcion_larga = Prompt.ask("Introduzca la descripcion larga de la creación")
     genero = Prompt.ask("Introduzca el genero de la creación")
@@ -22,8 +22,8 @@ def subir_creacion():
     ruta_ejecutable = Prompt.ask("Introduzca la ruta del ejecutable de la creación")
     especificaciones = Prompt.ask("Introduzca las especificaciones de la creación")
     
-    
-    response = requests.post('http://127.0.0.1:5000/creacion', json={'titulo_creacion': titulo_creacion, 'tipo': tipo, 'nombre_usuario': gv.nombre_usuario, 'fecha_subida': fecha_subida, 'descripcion_corta': descripcion_corta, 'descripcion_larga': descripcion_larga, 'genero': genero, 'icono': icono, 'tamano': tamaño, 'ruta_ejecutable': ruta_ejecutable, 'especificaciones': especificaciones})
+    #'fecha_subida': fecha_subida,    
+    response = requests.post('http://127.0.0.1:5000/creacion', json={'titulo_creacion': titulo_creacion, 'tipo': tipo, 'nombre_usuario': gv.nombre_usuario, 'descripcion_corta': descripcion_corta, 'descripcion_larga': descripcion_larga, 'genero': genero, 'icono': icono, 'tamano': tamaño, 'ruta_ejecutable': ruta_ejecutable, 'especificaciones': especificaciones})
     
     if response.status_code == 200:
         console.print("Creación subida exitosamente", style="green")

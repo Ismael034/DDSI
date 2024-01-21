@@ -37,7 +37,7 @@ class dev:
                             "Tipo VARCHAR(16),"
                             "Nombre_Usuario VARCHAR(20),"
                             "NumDescargas INTEGER,"
-                            "Fecha_Subida DATE,"
+                            "Fecha_Subida DATETIME,"
                             "Modificacion_activada BOOLEAN,"
                             "FOREIGN KEY (Titulo_Creacion) REFERENCES Articulo(Titulo),"
                             "FOREIGN KEY (Nombre_Usuario) REFERENCES Usuario(Nombre_Usuario),"
@@ -93,10 +93,10 @@ class dev:
             return False
   
         
-    def subir_creacion(self, titulo, tipo, usu, fecha):
+    def subir_creacion(self, titulo, tipo, usu):
         try:
         
-            self.db.execute(f"INSERT INTO Creacion(Titulo_Creacion,Tipo,Nombre_Usuario,NumDescargas,Fecha_Subida,Modificacion_activada) VALUES ('{titulo}', '{tipo}', '{usu}', '0', '{fecha}', '0')")
+            self.db.execute(f"INSERT INTO Creacion(Titulo_Creacion,Tipo,Nombre_Usuario,NumDescargas,Fecha_Subida,Modificacion_activada) VALUES ('{titulo}', '{tipo}', '{usu}', '0', NOW(), '0')")
             self.db.commit()
             return True
         except Exception as ex:

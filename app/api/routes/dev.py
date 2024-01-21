@@ -32,7 +32,7 @@ def query_subir_creacion():
         titulo = record['titulo_creacion']
         tipo = record['tipo']
         usu = record['nombre_usuario']
-        fecha = record['fecha_subida']
+        #fecha = record['fecha_subida']
         
         descripcion_corta = record['descripcion_corta']
         descripcion_larga = record['descripcion_larga']
@@ -43,7 +43,7 @@ def query_subir_creacion():
         especificaciones = record['especificaciones']
       
         q_articulo.subir_articulo(titulo, tamano, descripcion_corta, descripcion_larga, genero, icono, ruta_ejecutable, especificaciones)
-        q_dev.subir_creacion(titulo, tipo, usu, fecha)
+        q_dev.subir_creacion(titulo, tipo, usu)
         db.commit()
 
         result = jsonify({'message': 'creacion subida'})
