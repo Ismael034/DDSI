@@ -39,7 +39,7 @@ class tienda:
                             "Titulo_Videojuego VARCHAR(30),"
                             "Nombre_Usuario VARCHAR(20),"
                             "Fecha_Transaccion DATETIME,"
-                            "FOREIGN KEY (Titulo_Videojuego) REFERENCES Videojuego(Titulo_Videojuego),"
+                            "FOREIGN KEY (Titulo_Videojuego) REFERENCES Articulo(Titulo),"
                             "FOREIGN KEY (Nombre_Usuario) REFERENCES Usuario(Nombre_Usuario),"
                             "PRIMARY KEY (Titulo_Videojuego, Nombre_Usuario))")
             
@@ -70,38 +70,42 @@ class tienda:
         try:
             self.db.execute(f"SELECT * FROM Videojuego WHERE Titulo_Videojuego = '{titulo_videojuego}'")
             if self.db.fetchone() is not None:
-                return "El videojuego ya existe"
+                return "El videojuego ya existe", False
             self.db.execute(f"INSERT INTO Videojuego(Titulo_Videojuego, Nombre_Usuario, Precio, Version, Genero) VALUES ('{titulo_videojuego}', '{nombre_usuario}', {precio}, '{version}', '{genero}')")
             self.db.commit()
-            return True
+            return "Juego creado correctamente", True
         except Exception as ex:
             logging.error("Error inserting videojuego: ", ex)
             self.db.rollback()
-            return False
+            return "Error inserting videojuego", False
         
     def delete_videojuego(self, cvideojuego):
         try:
             #Comprobar si videojuego existe
             self.db.execute(f"SELECT * FROM Videojuego WHERE Titulo_Videojuego = '{cvideojuego}'")
             if self.db.fetchone() is None:
-                return "El videojuego no existe"
-            self.db.execute(f"DELETE FROM Videojuego WHERE cvideojuego = '{cvideojuego}'")
+                return "El videojuego no existe", False
+            self.db.execute(f"DELETE FROM Videojuego WHERE Titulo_Videojuego = '{cvideojuego}'")
             self.db.commit()
-            return True
+            return "Juego borrado correctamente", True
         except Exception as ex:
             logging.error("Error deleting videojuego: ", ex)
             self.db.rollback()
-            return False
+            return "Error deleting videojuego", False
         
     def update_version_videojuego(self, cvideojuego, version):
         try:
+            #Comprobar si videojuego existe
+            self.db.execute(f"SELECT * FROM Videojuego WHERE Titulo_Videojuego = '{cvideojuego}'")
+            if self.db.fetchone() is None:
+                return "El videojuego no existe", False
             self.db.execute(f"UPDATE Videojuego SET version = '{version}' WHERE Titulo_Videojuego = '{cvideojuego}'")
             self.db.commit()
-            return True
+            return "Version actulizada", True
         except Exception as ex:
             logging.error("Error updating version videojuego: ", ex)
             self.db.rollback()
-            return False
+            return "Error updating version videojuego", False
     
     def get_videojuego_por_genero(self, genero):
         try:

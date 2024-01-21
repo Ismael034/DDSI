@@ -24,10 +24,10 @@ def publicar_videojuego():
     
     response = requests.post('http://127.0.0.1:5000/tienda/', json={'titulo_videojuego': titulo_videojuego, 'precio': precio, 'version': version, 'nombre_usuario': gv.nombre_usuario, 'descripcion_corta': descripcion_corta, 'descripcion_larga': descripcion_larga, 'genero': genero, 'icono': icono, 'tamaño': tamaño, 'ruta_ejecutable': ruta_ejecutable, 'especificaciones': especificaciones})
     
-    if response.status_code == 200:
+    if response.status_code == 200 and response.json()[1] != False:
         console.print("Videojuego creado exitosamente", style="green")
     else:
-        console.print(f"Error al crear usuario: {response.text}", style="bold red")
+        console.print(f"Error al publicar videojuego: {response.json()[0]}", style="bold red")
         
 
 ### Eliminar videojuego ###
@@ -37,10 +37,10 @@ def eliminar_videojuego():
     
     response = requests.delete('http://127.0.0.1:5000/tienda/{}'.format(cvideojuego))
     
-    if response.status_code == 200:
+    if response.status_code == 200 and response.json()[1] != False:
         console.print("Videojuego borrado exitosamente", style="green")
     else:
-        console.print(f"Error al crear usuario: {response.text}", style="bold red")
+        console.print(f"Error al borrar videojuego: {response.json()[0]}", style="bold red")
         
         
 ### Actualizar version de un videojuego ###
@@ -51,10 +51,10 @@ def actualizar_version_videojuego():
     
     response = requests.post('http://127.0.0.1:5000/tienda/update-version/{}'.format(cvideojuego), json={'version': version})
     
-    if response.status_code == 200:
-        console.print("Version actualizada exitosamente", style="green")
+    if response.status_code == 200 and response.json()[1] != False:
+        console.print("Version de juego actualizado", style="green")
     else:
-        console.print(f"Error al crear usuario: {response.text}", style="bold red")
+        console.print(f"Error al borrar videojuego: {response.json()[0]}", style="bold red")
         
 ### Mostrar videojuegos por genero ###
 def mostrar_videojuegos_por_genero():
@@ -81,7 +81,29 @@ def mostrar_videojuegos_por_genero():
     if response.status_code == 200:
         console.print(table)
     else:
-        console.print(f"Error al crear usuario: {response.text}", style="bold red")
+        console.print(f"Error al mostrar videojuegos: {response.text}", style="bold red")
+        
+def comprar_videojuego():
+    console.print("Comprar videojuego", style="bold magenta")
+    cvideojuego = Prompt.ask("Ingresa el titulo del videojuego")
+    
+    response = requests.post('http://127.0.0.1:5000/tienda/comprar/{}'.format(cvideojuego), json={'nombre_usuario': gv.nombre_usuario})
+    
+    if response.status_code == 200:
+        console.print('Saldo total: ' + str(response.json()))
+    else:
+        console.print(f"Error al comprar videojuego: {response.text}", style="bold red")
+        
+def add_saldo():
+    console.print("Añadir saldo a tu cuenta", style="bold magenta")
+    saldo = Prompt.ask("Ingresa el saldo a añadir")
+    
+    response = requests.post('http://127.0.0.1:5000/tienda/add-saldo/{}'.format(gv.nombre_usuario), json={'saldo': saldo})
+    
+    if response.status_code == 200:
+        console.print('Saldo total: ' + str(response.json()))
+    else:
+        console.print(f"Error al comprar videojuego: {response.text}", style="bold red")
     
   
   
@@ -120,10 +142,30 @@ def show_menu_tienda():
             mostrar_videojuegos_por_genero()
             
         elif opcion_tienda == 4:
-            # Lógica para Ver Historial de Compras
-            pass
+            # Lógica para Comprar videojuegos
+            comprar_videojuego()
         elif opcion_tienda == 5:
-            # Lógica para Ver Historial de Compras
-            pass
+            # Lógica para Añadir saldo a tu cuenta
+            add_saldo()
         elif opcion_tienda == 6:
+            break
+        
+        
+### Menu ###
+def show_menu_tienda_not_logged():
+    while True:
+        options = [
+        "Mostrar videojuegos por genero",
+        "Volver al Menú Principal",
+        ]
+        
+        menu_cursor_style = ("fg_green", "bold")
+        menu_highlight_style = ("bg_black", "fg_green")
+        
+        terminal_menu = TerminalMenu(options, menu_cursor_style = menu_cursor_style, menu_highlight_style = menu_highlight_style)  
+        opcion_tienda = terminal_menu.show()
+        
+        if opcion_tienda == 0:
+            mostrar_videojuegos_por_genero()
+        elif opcion_tienda == 1:
             break
