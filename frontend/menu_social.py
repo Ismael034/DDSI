@@ -18,7 +18,7 @@ def crear_usuario():
 
     response = requests.post('http://localhost:5000/user/', json={'nombre_usuario': nombre_usuario, 'password': password, 'nombre': nombre, 'email': email})
     
-    if response.status_code == 200:
+    if response.status_code == 200 or 'error' in response.json():
         console.print("Usuario creado exitosamente", style="green")
         gv.set_nombre_usuario(nombre_usuario)
         mostrar_perfil()
@@ -33,7 +33,7 @@ def iniciar_sesion():
     password = Prompt.ask("Ingresa la contraseña")
 
     response = requests.post('http://localhost:5000/user/login', json={'nombre_usuario': nombre_usuario, 'password': password})
-    if response.status_code == 200:
+    if response.status_code == 200 and 'error' not in response.json():
         console.print("Sesión iniciada exitosamente", style="green")
         gv.set_nombre_usuario(nombre_usuario)
         mostrar_perfil()
@@ -43,7 +43,7 @@ def iniciar_sesion():
 
 def mostrar_perfil():
     response = requests.get('http://localhost:5000/user/{}'.format(gv.nombre_usuario))
-    if response.status_code == 200:
+    if response.status_code == 200 and 'error' not in response.json():
         table = Table(title="Perfil")
         table.add_column("Nombre de usuario")
         table.add_column("Foto de perfil")
@@ -62,7 +62,7 @@ def modificar_perfil():
 
     response = requests.post('http://localhost:5000/user/{}/update'.format(gv.nombre_usuario), json={'fotografia': foto, 'biografia': biografia, 'logros': logros})
 
-    if response.status_code == 200:
+    if response.status_code == 200 and 'error' not in response.json():
         console.print("Perfil modificado exitosamente", style="green")
         mostrar_perfil()
     else:
@@ -70,15 +70,15 @@ def modificar_perfil():
 
 def eliminar_usuario():
     response = requests.post('http://localhost:5000/user/{}/delete'.format(gv.nombre_usuario))
-    if response.status_code == 200:
+    if response.status_code == 200 and 'error' not in response.json():
         console.print("Usuario eliminado exitosamente", style="green")
-        cerrar_sesion()
+        gv.cerrar_sesion()
     else:
         console.print(f"Error al eliminar usuario", style="bold red")
 
 def get_amigos():
     response = requests.get('http://localhost:5000/user/{}/amigos'.format(gv.nombre_usuario))
-    if response.status_code == 200:
+    if response.status_code == 200 and 'error' not in response.json():
         if response.json() is None:
             console.print("No tienes amigos :(", style="bold red")
         else:
@@ -111,7 +111,9 @@ def amigos():
         menu_highlight_style = ("bg_black", "fg_green")
         terminal_menu = TerminalMenu(options, menu_cursor_style = menu_cursor_style, menu_highlight_style = menu_highlight_style)
         opcion_amigos = terminal_menu.show() 
-    
+
+        if gv.sesion_iniciada == False:
+            break
         
         if opcion_amigos == 0:
             get_amigos()
@@ -176,7 +178,9 @@ def show_menu_social():
         terminal_menu = TerminalMenu(options, menu_cursor_style = menu_cursor_style, menu_highlight_style = menu_highlight_style)
         opcion_social = terminal_menu.show() 
     
-        
+        if gv.sesion_iniciada is False:
+            break
+
         if opcion_social == 0:
             mostrar_perfil()
             pass

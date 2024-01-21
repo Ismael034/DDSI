@@ -90,7 +90,7 @@ class social:
 
     def get_usuario_by_id(self, nombre_usuario):
         try:
-            self.db.execute(f"SELECT * FROM Usuario WHERE Nombre_Usuario = '{nombre_usuario}'")
+            self.db.execute(f"SELECT * FROM Usuario WHERE Nombre_Usuario = '{nombre_usuario}' AND activo = TRUE")
             return self.db.fetchone()
         except Exception as ex:
             logging.error("Error getting usuario: ", ex)
