@@ -4,6 +4,7 @@ import logging
 from app.api.config import Config
 
 from app.api.routes.articulo import articulo
+from app.api.routes.valoracion import valoracion
 from app.api.routes.tienda import tienda
 from app.api.routes.social import social
 from app.api.routes.dev import dev
@@ -20,6 +21,7 @@ app.register_blueprint(articulo_obtenido)
 app.register_blueprint(tienda)
 app.register_blueprint(social)
 app.register_blueprint(dev)
+app.register_blueprint(valoracion)
 
 gunicorn_logger = logging.getLogger('gunicorn.error')
 app.logger.handlers = gunicorn_logger.handlers

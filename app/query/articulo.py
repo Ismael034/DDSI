@@ -145,3 +145,10 @@ class articulo:
             logging.error("Error inserting Valoracion: ", ex)
             self.db.rollback()
             return False
+    
+    def consultar_valoracion(self,user,articulo):
+        try:
+            self.db.execute(f"SELECT Titulo_articulo, Puntuacion, Comentario FROM Valoracion WHERE Nombre_usuario = '{user}' AND Titulo_articulo = '{articulo}'")
+            return self.db.fetchall()
+        except Exception as ex:
+            logging.error("Error al mostrar valoracion: ", ex)
