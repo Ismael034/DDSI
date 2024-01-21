@@ -42,6 +42,20 @@ class dev:
                             "FOREIGN KEY (Titulo_Creacion) REFERENCES Articulo(Titulo),"
                             "FOREIGN KEY (Nombre_Usuario) REFERENCES Usuario(Nombre_Usuario),"
                             "PRIMARY KEY (Titulo_Creacion))")
+                            
+            self.db.execute("CREATE TRIGGER tipo_creacion_valido Before INSERT ON Creacion "
+                            "FOR EACH ROW "
+                            "BEGIN "
+                            "DECLARE tipo_creacion VARCHAR(16); "
+                            "SET tipo_creacion = (SELECT Tipo FROM Creacion WHERE Titulo_Creacion = NEW.Titulo_Creacion); "
+                            "IF a == "MOD_JUGABLE" or a == "MOD_GRAFICO" or a == "TEXTURE_PACK" or a == "BETA" or a == "DEMO" or a == "FANGAME" or a == "JUEGO_COMPLETO" THEN "
+                            "   UPDATE Usuario SET Saldo = Saldo - precio_videojuego WHERE Nombre_Usuario = NEW.Nombre_Usuario; "
+                            "ELSE "
+                            "   SIGNAL SQLSTATE '45000' "
+                            "   SET MESSAGE_TEXT = 'Error: La creacion subida no tiene un tipo valido'; "
+                            "END IF; "
+                            "END;"
+                        )	
         
         except Exception as ex:
             logging.error("Error creating creacion table: ", ex)
@@ -119,7 +133,7 @@ class dev:
     def activar_mod(self, nomb):
         self.db.execute(f"SELECT Tipo FROM Creacion WHERE Titulo_Creacion = '{nomb}'")
         a = self.db.fetchone()[0]
-        if a == "Modificacion" or a == "mod" or a == "modificacion":
+        if a == "MOD_JUGABLE" or a == "MOD_GRAFICO" or a == "TEXTURE_PACK":
             try:
                 self.db.execute(f"UPDATE Creacion SET Modificacion_activada = 1 WHERE Titulo_Creacion = '{nomb}'")
             except Exception as ex:

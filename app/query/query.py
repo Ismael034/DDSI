@@ -48,6 +48,7 @@ class query:
             self.db.execute(f"DROP TRIGGER IF EXISTS actualizar_saldo")
             self.db.execute(f"DROP TRIGGER IF EXISTS crear_perfil")
             self.db.execute(f"DROP TRIGGER IF EXISTS anadir_articulo_usuario")
+            self.db.execute(f"DROP TRIGGER IF EXISTS tipo_creacion_valido")
             
             self.db.commit()
         except Exception as ex:
