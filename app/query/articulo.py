@@ -78,6 +78,17 @@ class articulo:
                             "Ult_vez_jugado DATETIME,"
                             "Estadisticas VARCHAR(50),"
                             "PRIMARY KEY (Nombre_usuario,Titulo_articulo))")
+
+            self.db.execute("CREATE TRIGGER anadir_articulo_usuario AFTER INSERT ON Articulo_obtenido "
+                            "FOR EACH ROW "
+                            "BEGIN "
+                            "DECLARE new_articulo VARCHAR(200);"
+                            "SET new_articulo = NEW.Titulo_articulo;"
+                            "UPDATE Usuario "
+                            "SET Articulos_adquiridos = CONCAT(Articulos_adquiridos,new_articulo,', ') "
+                            "WHERE Nombre_Usuario = NEW.Nombre_usuario;"
+                            "END;"
+                            )
         except Exception as ex:
             logging.error("Error creating table Articulo_obtenido: ", ex)
             self.db.rollback()
