@@ -1,6 +1,7 @@
 import json
 import logging
 import app.query.tienda as query_tienda
+import app.query.social as query_social
 import app.query.articulo as query_articulo
 
 import app.database as database
@@ -9,6 +10,7 @@ from flask import Blueprint, jsonify, request
 tienda = Blueprint('tienda', __name__)
 db = database.database()
 q = query_tienda.tienda(db)
+query_social = query_social.social(db)
 q_articulo = query_articulo.articulo(db)
 
 #Publicar videojuego
@@ -85,5 +87,5 @@ def comprar_videojuego(cvideojuego):
 def add_saldo(cusuario):
   record = json.loads(request.data)
   saldo = record['saldo']
-  result = q.add_saldo(cusuario, saldo)
+  result = query_social.update_saldo(cusuario, saldo)
   return jsonify(result)

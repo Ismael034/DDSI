@@ -97,25 +97,6 @@ def delete_usuario_by_id(usuario):
         logging.error(f"Error borrando usuario: {ex}")
         return jsonify({'error': 'error borrando usuario'})
 
-@social.route('/user/<usuario>/saldo', methods=['POST'])
-def update_saldo(usuario):
-    try:
-        record = json.loads(request.data)
-        saldo = record['saldo']
-
-        # Check values are valid
-        if not isinstance(saldo, int):
-            return jsonify({'error': 'invalid values'}), 400
-
-        q.update_saldo(usuario, saldo)
-        return jsonify({'message': 'saldo actualizado'})
-
-    except Exception as ex:
-        current_app.logger.debug(f"Error al actualizar saldo: {ex}")
-        return jsonify({'error': 'error al actualizar saldo'})
-
-
-
 
 
 @social.route('/user/<usuario>/amigos/accept', methods=['POST'])
