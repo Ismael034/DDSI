@@ -46,6 +46,7 @@ class query:
             self.db.execute("DROP TABLE IF EXISTS Usuario")
             
             self.db.execute(f"DROP TRIGGER IF EXISTS actualizar_saldo")
+            self.db.execute(f"DROP TRIGGER IF EXISTS crear_perfil")
             self.db.commit()
         except Exception as ex:
             logging.error("Error deleting tables: ", ex)
