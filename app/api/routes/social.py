@@ -44,6 +44,26 @@ def create_usuario():
         current_app.logger.debug("Error al crear usuario: ", ex)
         return jsonify({'error': 'error al crear usuario'})
         
+@social.route('/user/login', methods=['POST'])
+def iniciar_sesion():
+    try:
+        record = json.loads(request.data)
+        nombre_usuario = record['nombre_usuario']
+        password = record['password']
+
+        usuario = q.get_usuario_by_id(nombre_usuario)
+        if usuario is None:
+            return jsonify({'error': 'usuario not found'}), 404
+
+        if usuario[4] != password:
+            return jsonify({'error': 'invalid password'}), 400
+
+        return jsonify({'message': 'sesion iniciada'})
+
+    except Exception as ex:
+        current_app.logger.debug("Error al iniciar sesion: ", ex)
+        return jsonify({'error': 'error al iniciar sesion'})
+    
 
 @social.route('/user/<usuario>/update_articulo', methods=['POST'])
 def update_articulos_adquiridos(usuario):
@@ -98,6 +118,10 @@ def delete_usuario_by_id(usuario):
         return jsonify({'error': 'error borrando usuario'})
 
 
+@social.route('/user/<usuario>/amigos', methods=['GET'])
+def query_amigos_by_id(usuario):
+    amigos = q.get_amistad_by_id(usuario)
+    return jsonify(amigos)
 
 @social.route('/user/<usuario>/amigos/accept', methods=['POST'])
 def accept_amigo(usuario):
@@ -131,6 +155,11 @@ def add_amigo(usuario):
         if not isinstance(amigo, str):
             return jsonify({'error': 'invalid values'}), 400
 
+        amigo = q.get_usuario_by_id(amigo)[0]
+
+        if amigo is None:
+            return jsonify({'error': 'amigo no existe'}), 400
+
         q.insert_amistad(usuario, amigo)
         return jsonify({'message': 'solicitud enviada'})
 
@@ -147,6 +176,11 @@ def delete_amigo(usuario):
         # Check values are valid
         if not isinstance(amigo, str):
             return jsonify({'error': 'invalid values'}), 400
+
+        amigo = q.get_usuario_by_id(amigo)[0]
+
+        if amigo is None:
+            return jsonify({'error': 'amigo no existe'}), 400
 
         q.delete_amistad(usuario, amigo)
         return jsonify({'message': 'amigo borrado'})

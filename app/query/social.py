@@ -193,9 +193,10 @@ class social:
     def get_amistad_by_id(self, nombre_usuario):
         try:
             self.db.execute(f"SELECT * FROM Amistad WHERE Nombre_Usuario = '{nombre_usuario}'")
-            return self.db.fetchone()
+            return self.db.fetchall()
         except Exception as ex:
             logging.error("Error getting amistad: ", ex)
+            
 
     def insert_amistad(self, nombre_usuario, amigo):
         try:
