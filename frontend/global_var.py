@@ -1,5 +1,5 @@
 nombre_usuario = 'test'
-sesion_iniciada = True
+sesion_iniciada = False
 from rich.console import Console
 from rich.prompt import Prompt
 
