@@ -24,7 +24,7 @@ class tienda:
                             "Nombre_Usuario VARCHAR(20),"
                             "Genero VARCHAR(20),"
                             "Precio INTEGER,"
-                            "Version INTEGER,"
+                            "Version VARCHAR(20),"
                             "FOREIGN KEY (Titulo_Videojuego) REFERENCES Articulo(Titulo),"
                             "FOREIGN KEY (Nombre_Usuario) REFERENCES Usuario(Nombre_Usuario),"
                             "PRIMARY KEY (Titulo_Videojuego))")
@@ -42,6 +42,13 @@ class tienda:
                             "FOREIGN KEY (Titulo_Videojuego) REFERENCES Videojuego(Titulo_Videojuego),"
                             "FOREIGN KEY (Nombre_Usuario) REFERENCES Usuario(Nombre_Usuario),"
                             "PRIMARY KEY (Titulo_Videojuego, Nombre_Usuario))")
+            
+            self.db.execute("CREATE TRIGGER actualizar_saldo AFTER INSERT ON Compra "
+                                "FOR EACH ROW "
+                                "BEGIN "
+                                "UPDATE Usuario SET Saldo = Saldo - (SELECT Precio FROM Videojuego WHERE Titulo_Videojuego = NEW.Titulo_Videojuego) WHERE Nombre_Usuario = NEW.Nombre_Usuario; "
+                                "END;")
+
         
         except Exception as ex:
             logging.error("Error creating Compra table:", ex)
@@ -49,7 +56,10 @@ class tienda:
             
     def insert_videojuego(self, titulo_videojuego, precio, version, nombre_usuario, genero):
         try:
-            self.db.execute(f"INSERT INTO Videojuego VALUES ('{titulo}', '{nombre}', {precio}, {version}, {genero})")
+            self.db.execute(f"SELECT * FROM Videojuego WHERE Titulo_Videojuego = '{titulo_videojuego}'")
+            if self.db.fetchone() is not None:
+                return "El videojuego ya existe"
+            self.db.execute(f"INSERT INTO Videojuego(Titulo_Videojuego, Nombre_Usuario, Precio, Version, Genero) VALUES ('{titulo_videojuego}', '{nombre_usuario}', {precio}, '{version}', '{genero}')")
             self.db.commit()
             return True
         except Exception as ex:
@@ -59,7 +69,11 @@ class tienda:
         
     def delete_videojuego(self, cvideojuego):
         try:
-            self.db.execute(f"DELETE FROM Videojuego WHERE cvideojuego = {cvideojuego}")
+            #Comprobar si videojuego existe
+            self.db.execute(f"SELECT * FROM Videojuego WHERE Titulo_Videojuego = '{cvideojuego}'")
+            if self.db.fetchone() is None:
+                return "El videojuego no existe"
+            self.db.execute(f"DELETE FROM Videojuego WHERE cvideojuego = '{cvideojuego}'")
             self.db.commit()
             return True
         except Exception as ex:
@@ -69,7 +83,7 @@ class tienda:
         
     def update_version_videojuego(self, cvideojuego, version):
         try:
-            self.db.execute(f"UPDATE Videojuego SET version = {version} WHERE cvideojuego = {cvideojuego}")
+            self.db.execute(f"UPDATE Videojuego SET version = '{version}' WHERE Titulo_Videojuego = '{cvideojuego}'")
             self.db.commit()
             return True
         except Exception as ex:
@@ -86,9 +100,15 @@ class tienda:
     
     def comprar_videojuego(self, cvideojuego, nombre_usuario):
         try:
-            self.db.execute(f"INSERT INTO Compra VALUES ({cvideojuego}, {nombre_usuario}, CURRENT_DATE)")
+            #Comprobar si el videojuego ya ha sido comprado
+            self.db.execute(f"SELECT * FROM Compra WHERE Titulo_Videojuego = '{cvideojuego}' AND Nombre_Usuario = '{nombre_usuario}'")
+            if self.db.fetchone() is not None:
+                return "El videojuego ya ha sido comprado por el usuario"
+            self.db.execute(f"INSERT INTO Compra VALUES ('{cvideojuego}', '{nombre_usuario}', CURRENT_DATE)")
             self.db.commit()
-            return True
+            self.db.execute(f"SELECT Saldo FROM Usuario WHERE Nombre_Usuario = '{nombre_usuario}'")
+            saldo_actualizado = self.db.fetchone()[0]
+            return saldo_actualizado
         except Exception as ex:
             logging.error("Error comprando videojuego: ", ex)
             self.db.rollback()
@@ -96,9 +116,11 @@ class tienda:
         
     def add_saldo(self, cusuario, saldo):
         try:
-            self.db.execute(f"UPDATE Usuario SET Saldo = Saldo + {saldo} WHERE cusuario = {cusuario}")
+            self.db.execute(f"UPDATE Usuario SET Saldo = Saldo + {saldo} WHERE Nombre_Usuario = '{cusuario}'")
             self.db.commit()
-            return True
+            self.db.execute(f"SELECT Saldo FROM Usuario WHERE Nombre_Usuario = '{cusuario}'")
+            saldo_actualizado = self.db.fetchone()[0]
+            return saldo_actualizado
         except Exception as ex:
             logging.error("Error adding saldo: ", ex)
             self.db.rollback()

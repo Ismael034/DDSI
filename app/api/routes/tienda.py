@@ -14,6 +14,7 @@ q_articulo = query_articulo.articulo(db)
 #Publicar videojuego
 @tienda.route('/tienda/', methods=['POST'])
 def insert_videojuego():
+  record = json.loads(request.data)
   titulo_videojuego = record['titulo_videojuego']
   precio = record['precio']
   version = record['version']
@@ -27,9 +28,7 @@ def insert_videojuego():
   especificaciones = record['especificaciones']
   
   result2 = q_articulo.subir_articulo(titulo_videojuego, tamaño, descripcion_corta, descripcion_larga, genero, icono, ruta_ejecutable, especificaciones)
-  
   result = q.insert_videojuego(titulo_videojuego, precio, version, nombre_usuario, genero)
-  
   return jsonify(result)
 
 
@@ -42,19 +41,39 @@ def delete_videojuego(cvideojuego):
 #Actualizar version de un videojuego
 @tienda.route('/tienda/update-version/<cvideojuego>', methods=['POST'])
 def update_videojuego(cvideojuego):
+  record = json.loads(request.data)
   version = record['version']
   result = q.update_version_videojuego(cvideojuego, version)
   return jsonify(result)
 
-#Obtener los videojuegos de un genero
 @tienda.route("/tienda/<genero>", methods=['GET'])
 def query_tienda(genero):
-  result = q.get_videojuego_por_genero(genero)
-  return jsonify(result)
+    videojuegos = q.get_videojuego_por_genero(genero)
+
+    # Crear un diccionario para mapear los videojuegos con sus artículos
+    resultado_final = []
+    for videojuego in videojuegos:
+        # Suponiendo que cada videojuego tiene un identificador único
+        nombre_videojuego = videojuego[0]
+        articulo_correspondiente =  q_articulo.consultar_articulo(nombre_videojuego)
+        
+        videojuego_lista = list(videojuego)
+        
+        # Añadir el artículo al videojuego
+        videojuego_lista.append(articulo_correspondiente[0][2])
+        videojuego_lista.append(articulo_correspondiente[0][3])
+        videojuego_lista.append(articulo_correspondiente[0][5])
+        
+            
+        resultado_final.append(videojuego_lista)
+
+    return jsonify(resultado_final)
+
 
 #Comprar un videojuego
 @tienda.route('/tienda/comprar/<cvideojuego>', methods=['POST'])
 def comprar_videojuego(cvideojuego):
+  record = json.loads(request.data)
   nombre_usuario = record['nombre_usuario']
   result = q.comprar_videojuego(cvideojuego, nombre_usuario)
   result2 = q_articulo.anadir_articulo_obtenido(nombre_usuario, cvideojuego)
@@ -63,6 +82,7 @@ def comprar_videojuego(cvideojuego):
 #Añadir saldo a un usuario
 @tienda.route('/tienda/add-saldo/<cusuario>', methods=['POST'])
 def add_saldo(cusuario):
+  record = json.loads(request.data)
   saldo = record['saldo']
   result = q.add_saldo(cusuario, saldo)
   return jsonify(result)
