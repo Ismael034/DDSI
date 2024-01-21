@@ -169,14 +169,15 @@ def add_amigo(usuario):
         amistad = q.get_amistad_by_id(usuario)
         logging.error(amistad)
         
-        if len(amistad) > 0: 
-            return jsonify({'error': 'ya son amigos'}), 400
+        for a in amistad:
+            if a[1] == amigo:
+                return jsonify({'error': 'ya son amigos'}), 400
 
         q.insert_amistad(usuario, amigo)
         return jsonify({'message': 'solicitud enviada'})
 
     except Exception as ex:
-        current_app.logger.debug("Error al agregar amigo: ", ex)
+        current_app.logger.debug(ex)
         return jsonify({'error': 'error al agregar amigo'})
 
 @social.route('/user/<usuario>/amigos/delete', methods=['POST'])

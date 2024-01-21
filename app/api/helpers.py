@@ -8,12 +8,14 @@ class helpers:
         db = database()
         q = query(db)
         try:
-            #q.delete_tables()
+            q.delete_tables()
             tables = q.get_tables()
             if len(tables) == 0:
                 logging.error("No tables found, creating tables...")
                 q.create_tables()
                 logging.error("Tables created.")
+                db.commit()
+                q.insert_data()
                 db.commit()
         except Exception as ex:
             print("Error checking tables: ", ex)
