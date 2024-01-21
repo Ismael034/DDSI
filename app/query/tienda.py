@@ -116,10 +116,14 @@ class tienda:
     
     def comprar_videojuego(self, cvideojuego, nombre_usuario):
         try:
+            #Comprobar si videojuego existe
+            self.db.execute(f"SELECT * FROM Videojuego WHERE Titulo_Videojuego = '{cvideojuego}'")
+            if self.db.fetchone() is None:
+                return "El videojuego no existe", False
             #Comprobar si el videojuego ya ha sido comprado
             self.db.execute(f"SELECT * FROM Compra WHERE Titulo_Videojuego = '{cvideojuego}' AND Nombre_Usuario = '{nombre_usuario}'")
             if self.db.fetchone() is not None:
-                return "El videojuego ya ha sido comprado por el usuario"
+                return "El videojuego ya ha sido comprado por el usuario", False
             self.db.execute(f"INSERT INTO Compra VALUES ('{cvideojuego}', '{nombre_usuario}', CURRENT_DATE)")
             self.db.commit()
             self.db.execute(f"SELECT Saldo FROM Usuario WHERE Nombre_Usuario = '{nombre_usuario}'")
@@ -130,7 +134,7 @@ class tienda:
                 return "Saldo insuficiente", False
             logging.error("Error comprando videojuego: ", ex)
             self.db.rollback()
-            return False
+            return "Error comprando videojuego", False
         
     def add_saldo(self, cusuario, saldo):
         try:
