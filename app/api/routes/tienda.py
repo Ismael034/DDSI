@@ -62,9 +62,11 @@ def query_tienda(genero):
         videojuego_lista = list(videojuego)
         
         # Añadir el artículo al videojuego
+        videojuego_lista.append(articulo_correspondiente[0][1])
         videojuego_lista.append(articulo_correspondiente[0][2])
         videojuego_lista.append(articulo_correspondiente[0][3])
         videojuego_lista.append(articulo_correspondiente[0][5])
+        videojuego_lista.append(articulo_correspondiente[0][7])
         
             
         resultado_final.append(videojuego_lista)
