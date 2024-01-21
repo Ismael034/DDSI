@@ -45,7 +45,7 @@ def create_usuario():
         return jsonify({'error': 'error al crear usuario'})
         
 
-@social.route('/user/<usuario>/update', methods=['POST'])
+@social.route('/user/<usuario>/update_articulo', methods=['POST'])
 def update_articulos_adquiridos(usuario):
     try:
         record = json.loads(request.data)
@@ -75,6 +75,7 @@ def update_perfil(usuario):
             return jsonify({'error': 'invalid values'}), 400
 
         q.update_perfil(usuario, fotografia, biografia, logros)
+        return jsonify({'message': 'perfil actualizado'})
 
     except Exception as ex:
         current_app.logger.debug("Error al actualizar usuario: ", ex)
@@ -84,11 +85,8 @@ def update_perfil(usuario):
 @social.route('/user/<usuario>/delete', methods=['POST'])
 def delete_usuario_by_id(usuario):
     try:
-        record = json.loads(request.data)
-
-        email = record['email']
-        usuario = q.get_usuario_by_id(usuario)
-        if usuario is not None and usuario['email'] == email:
+        usuario = q.get_usuario_by_id(usuario)[0]
+        if usuario is not None:
             q.delete_perfil(usuario)
             q.delete_usuario(usuario)
             
@@ -96,7 +94,7 @@ def delete_usuario_by_id(usuario):
         else:
             return jsonify({'error': 'el usuario no existe'}), 400
     except Exception as ex:
-        logging.error("Error borrando usuario: ", ex)
+        logging.error(f"Error borrando usuario: {ex}")
         return jsonify({'error': 'error borrando usuario'})
 
 @social.route('/user/<usuario>/saldo', methods=['POST'])
@@ -113,22 +111,12 @@ def update_saldo(usuario):
         return jsonify({'message': 'saldo actualizado'})
 
     except Exception as ex:
-        current_app.logger.debug("Error al actualizar saldo: ", ex)
+        current_app.logger.debug(f"Error al actualizar saldo: {ex}")
         return jsonify({'error': 'error al actualizar saldo'})
 
 
 
 
-
-
-@social.route('/user/<usuario>/amigos', methods=['GET'])
-def get_amigos(usuario):
-    try:
-        result = q.get_amistad_by_id(usuario)
-        return jsonify(result)
-    except Exception as ex:
-        current_app.logger.debug("Error al obtener amigos: ", ex)
-        return jsonify({'error': 'error al obtener amigos'})
 
 @social.route('/user/<usuario>/amigos/accept', methods=['POST'])
 def accept_amigo(usuario):
@@ -163,7 +151,7 @@ def add_amigo(usuario):
             return jsonify({'error': 'invalid values'}), 400
 
         q.insert_amistad(usuario, amigo)
-        return jsonify({'message': 'amigo agregado'})
+        return jsonify({'message': 'solicitud enviada'})
 
     except Exception as ex:
         current_app.logger.debug("Error al agregar amigo: ", ex)

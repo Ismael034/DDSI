@@ -48,6 +48,7 @@ class social:
                             "Saldo INTEGER,"
                             "Nombre VARCHAR(20),"
                             "Password VARCHAR(100),"
+                            "Activo BOOLEAN,"
                             "Articulos_adquiridos VARCHAR(20))")
         
         except Exception as ex:
@@ -98,7 +99,7 @@ class social:
 
     def insert_usuario(self, nombre_usuario, nombre, email, password, saldo, articulos_adquiridos):
         try:
-            self.db.execute(f"INSERT INTO Usuario VALUES ('{nombre_usuario}', '{email}', '{saldo}', '{nombre}', '{password}', '{articulos_adquiridos}')")
+            self.db.execute(f"INSERT INTO Usuario VALUES ('{nombre_usuario}', '{email}', '{saldo}', '{nombre}', '{password}', TRUE, '{articulos_adquiridos}')")
             self.db.commit()
             return True
         except Exception as ex:
@@ -129,7 +130,7 @@ class social:
             
     def delete_usuario(self, nombre_usuario):
         try:
-            self.db.execute(f"DELETE FROM Usuario WHERE nombre_usuario = '{nombre_usuario}'")
+            self.db.execute(f"UPDATE Usuario SET activo = FALSE WHERE nombre_usuario = '{nombre_usuario}'")
             self.db.commit()
             return True
         except Exception as ex:
@@ -158,9 +159,7 @@ class social:
 
     def update_perfil(self, nombre_usuario, fotografia, biografia, logros):
         try:
-            self.db.execute(f"UPDATE Perfil SET fotografia = '{fotografia}', biografia = '{biografia}',"
-                            "logros = '{logros}'"
-                            "WHERE nombre_usuario = '{nombre_usuario}'")
+            self.db.execute(f"UPDATE Perfil SET fotografia = '{fotografia}', biografia = '{biografia}', logros = '{logros}' WHERE nombre_usuario = '{nombre_usuario}'")
             self.db.commit()
             return True
         except Exception as ex:
@@ -168,13 +167,13 @@ class social:
             self.db.rollback()
             return False
 
-    def delete_perfil(self, nombre_usuario, email):
+    def delete_perfil(self, nombre_usuario):
         try:
-            self.db.execute(f"DELETE FROM Perfil WHERE nombre_usuario = '{nombre_usuario}' AND email = '{email}'")
+            self.db.execute(f"DELETE FROM Perfil WHERE nombre_usuario = '{nombre_usuario}'")
             self.db.commit()
             return True
         except Exception as ex:
-            logging.error("Error deleting perfil: ", ex)
+            logging.error(f"Error deleting perfil: {ex}")
             self.db.rollback()
             return False
 
@@ -188,7 +187,8 @@ class social:
 
     def insert_amistad(self, nombre_usuario, amigo):
         try:
-            self.db.execute(f"INSERT INTO Amistad VALUES ('{nombre_usuario}', '{amigo}', {false})")
+            self.db.execute(f"INSERT INTO Amistad VALUES ('{nombre_usuario}', '{amigo}', FALSE)")
+            self.db.commit()
             return True
         except Exception as ex:
             logging.error("Error inserting amistad: ", ex)
@@ -197,7 +197,7 @@ class social:
 
     def accept_amistad(self, nombre_usuario, amigo):
         try:
-            self.db.execute(f"UPDATE Amistad SET aceptada = {true} WHERE nombre_usuario = '{nombre_usuario}' AND amigo = '{amigo}'")
+            self.db.execute(f"UPDATE Amistad SET aceptada = TRUE WHERE nombre_usuario = '{nombre_usuario}' AND amigo = '{amigo}'")
             self.db.commit()
             return True
         except Exception as ex:
