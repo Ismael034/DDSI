@@ -103,7 +103,7 @@ class articulo:
         if n<0:
             n=0
         try:
-            self.db.execute(f"SELECT Titulo_articulo, Ult_vez_jugado, Estadisticas FROM Articulo_obtenido WHERE Nombre_usuario = '{user}' ORDER BY Ult_vez_jugado LIMIT '{n}'")
+            self.db.execute(f"SELECT Titulo_articulo, Ult_vez_jugado, Estadisticas FROM Articulo_obtenido WHERE Nombre_usuario = '{user}' ORDER BY Ult_vez_jugado LIMIT {n}")
             return self.db.fetchall()
         except Exception as ex:
             logging.error("Error al mostrar los articulos obtenidos: ", ex)

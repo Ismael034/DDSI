@@ -11,10 +11,12 @@ q = query.social(db)
 
 
 @social.route('/user/<username>', methods=['GET'])
-def query_usuario_by_id(username):
-    result = q.get_usuario_by_id(username)
-    return jsonify(result)
-
+def query_perfil_by_id(username):
+    perfil = q.get_perfil_by_id(username)
+    if perfil is None:
+        return jsonify({'error': 'perfil not found'}), 404
+    
+    return jsonify(perfil)
 
 @social.route('/user/', methods=['POST'])
 def create_usuario():
@@ -22,15 +24,20 @@ def create_usuario():
         record = json.loads(request.data)
         nombre_usuario = record['nombre_usuario']
         nombre = record['nombre']
+        email = record['email']
         password = record['password']
         saldo = 0
         articulos_adquiridos = ''
 
+        usuario = q.get_usuario_by_id(nombre_usuario)
+        if usuario is not None:
+            return jsonify({'error': 'usuario already exists'}), 400
         # Check values are valid
         if not isinstance(nombre_usuario, str) or not isinstance(nombre, str) or not isinstance(password, str):
             return jsonify({'error': 'invalid values'}), 400
 
-        q.insert_usuario(nombre_usuario, nombre, password, saldo, articulos_adquiridos)
+        q.insert_usuario(nombre_usuario, nombre, email, password, saldo, articulos_adquiridos)
+        q.insert_perfil(nombre_usuario, '', '', '', '')
         return jsonify({'message': 'usuario creado'})
 
     except Exception as ex:
@@ -39,36 +46,143 @@ def create_usuario():
         
 
 @social.route('/user/<usuario>/update', methods=['POST'])
-def update_usuario(usuario):
+def update_articulos_adquiridos(usuario):
     try:
         record = json.loads(request.data)
-        nombre = record['nombre']
-        password = record['password']
         articulos_adquiridos = record['articulos_adquiridos']
 
         # Check values are valid
-        if not isinstance(nombre, str) or not isinstance(password, str) or not isinstance(articulos_adquiridos, str):
+        if not isinstance(articulos_adquiridos, str):
             return jsonify({'error': 'invalid values'}), 400
-    
+
+        q.update_articulos_adquiridos(usuario, articulos_adquiridos)
+        return jsonify({'message': 'usuario actualizado'})
+
+    except Exception as ex:
+        current_app.logger.debug("Error al actualizar articulos adquiridos: ", ex)
+        return jsonify({'error': 'error al actualizar articulos adquiridos'})
+
+@social.route('/user/<usuario>/update', methods=['POST'])
+def update_perfil(usuario):
+    try:
+        record = json.loads(request.data)
+        fotografia = record['fotografia']
+        biografia = record['biografia']
+        logros = record['logros']
+
+        # Check values are valid
+        if not isinstance(fotografia, str) or not isinstance(biografia, str) or not isinstance(logros, str):
+            return jsonify({'error': 'invalid values'}), 400
+
+        q.update_perfil(usuario, fotografia, biografia, logros)
+
     except Exception as ex:
         current_app.logger.debug("Error al actualizar usuario: ", ex)
         return jsonify({'error': 'error al actualizar usuario'})
 
-@social.route('/user/<cpedido>/delete', methods=['POST'])
-def delete_pedido_by_id(cpedido):
+
+@social.route('/user/<usuario>/delete', methods=['POST'])
+def delete_usuario_by_id(usuario):
     try:
-        pedido = q.get_pedido_by_id(cpedido)
-        if pedido is not None:
-            q.delete_pedido(cpedido)
+        record = json.loads(request.data)
+
+        email = record['email']
+        usuario = q.get_usuario_by_id(usuario)
+        if usuario is not None and usuario['email'] == email:
+            q.delete_perfil(usuario)
+            q.delete_usuario(usuario)
             
-            # Delete detalle pedido
-            detalle_pedido = q.get_detalle_pedido_by_id(cpedido)
-            if detalle_pedido is not None:
-                q.delete_detalle_pedido(cpedido)
-    
-            return jsonify({'message': 'pedido deleted'})
+            return jsonify({'message': 'usuario borrado'})
         else:
-            return jsonify({'error': 'pedido does not exist'}), 400
+            return jsonify({'error': 'el usuario no existe'}), 400
     except Exception as ex:
-        logging.error("Error deleting pedido: ", ex)
-        return jsonify({'error': 'error deleting pedido'})
+        logging.error("Error borrando usuario: ", ex)
+        return jsonify({'error': 'error borrando usuario'})
+
+@social.route('/user/<usuario>/saldo', methods=['POST'])
+def update_saldo(usuario):
+    try:
+        record = json.loads(request.data)
+        saldo = record['saldo']
+
+        # Check values are valid
+        if not isinstance(saldo, int):
+            return jsonify({'error': 'invalid values'}), 400
+
+        q.update_saldo(usuario, saldo)
+        return jsonify({'message': 'saldo actualizado'})
+
+    except Exception as ex:
+        current_app.logger.debug("Error al actualizar saldo: ", ex)
+        return jsonify({'error': 'error al actualizar saldo'})
+
+
+
+
+
+
+@social.route('/user/<usuario>/amigos', methods=['GET'])
+def get_amigos(usuario):
+    try:
+        result = q.get_amistad_by_id(usuario)
+        return jsonify(result)
+    except Exception as ex:
+        current_app.logger.debug("Error al obtener amigos: ", ex)
+        return jsonify({'error': 'error al obtener amigos'})
+
+@social.route('/user/<usuario>/amigos/accept', methods=['POST'])
+def accept_amigo(usuario):
+    try:
+        record = json.loads(request.data)
+        amigo = record['amigo']
+
+        # Check values are valid
+        if not isinstance(amigo, str):
+            return jsonify({'error': 'invalid values'}), 400
+
+        amistad = q.get_amistad_by_id(usuario)
+        if amistad is None:
+            return jsonify({'error': 'amistad no existe'}), 400
+
+        q.accept_amistad(usuario, amigo)
+        return jsonify({'message': 'amigo aceptado'})
+
+    except Exception as ex:
+        current_app.logger.debug("Error al aceptar amigo: ", ex)
+        return jsonify({'error': 'error al aceptar amigo'})
+
+
+@social.route('/user/<usuario>/amigos/add', methods=['POST'])
+def add_amigo(usuario):
+    try:
+        record = json.loads(request.data)
+        amigo = record['amigo']
+
+        # Check values are valid
+        if not isinstance(amigo, str):
+            return jsonify({'error': 'invalid values'}), 400
+
+        q.insert_amistad(usuario, amigo)
+        return jsonify({'message': 'amigo agregado'})
+
+    except Exception as ex:
+        current_app.logger.debug("Error al agregar amigo: ", ex)
+        return jsonify({'error': 'error al agregar amigo'})
+
+@social.route('/user/<usuario>/amigos/delete', methods=['POST'])
+def delete_amigo(usuario):
+    try:
+        record = json.loads(request.data)
+        amigo = record['amigo']
+
+        # Check values are valid
+        if not isinstance(amigo, str):
+            return jsonify({'error': 'invalid values'}), 400
+
+        q.delete_amistad(usuario, amigo)
+        return jsonify({'message': 'amigo borrado'})
+
+    except Exception as ex:
+        current_app.logger.debug("Error al borrar amigo: ", ex)
+        return jsonify({'error': 'error al borrar amigo'})
+

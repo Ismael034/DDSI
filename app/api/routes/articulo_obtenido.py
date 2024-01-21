@@ -9,18 +9,18 @@ db = database.database()
 q = query.articulo(db)
 
 @articulo_obtenido.route('/articulo_obtenido/<nombre_usuario>', methods=['GET'])
-def query_articulos(user):
+def query_articulos_by_nombre(nombre_usuario):
     #Pasar numero de consultas n
     n=4
-    result = q.consultar_articulos(user,n)
+    result = q.consultar_articulos(nombre_usuario,n)
     return jsonify(result)
 
-@articulo_obtenido.route('/articulo_obtenido/', methods=['GET'])
-def query_articulos(user,titulo):
+@articulo_obtenido.route('/articulo_obtenido/<nombre_usuario>/<titulo>', methods=['GET'])
+def query_articulos(nombre_usuario,titulo):
         
     record = json.loads(request.data)
     titulo = record['titulo']
-    user = record['nombre_usuario']
+    nombre_usuario = record['nombre_usuario']
 
     result = q.consultar_articulo_obtenido(user,titulo)
     return jsonify(result)

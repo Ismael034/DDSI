@@ -44,6 +44,7 @@ class social:
         try:
             self.db.execute("CREATE TABLE Usuario ("
                             "Nombre_Usuario VARCHAR(20) PRIMARY KEY,"
+                            "Email VARCHAR(20),"
                             "Saldo INTEGER,"
                             "Nombre VARCHAR(20),"
                             "Password VARCHAR(100),"
@@ -56,12 +57,11 @@ class social:
         try:
             self.db.execute("CREATE TABLE Perfil ("
                             "Nombre_Usuario VARCHAR(20),"
-                            "Email VARCHAR(20),"
-                            "Fotografia BLOB,"
+                            "Fotografia VARCHAR(50),"
                             "Biografia VARCHAR(300),"
                             "Logros VARCHAR(300),"
                             "FOREIGN KEY (Nombre_Usuario) REFERENCES Usuario(Nombre_Usuario),"
-                            "PRIMARY KEY (Nombre_Usuario, Email))")
+                            "PRIMARY KEY (Nombre_Usuario))")
         
         except Exception as ex:
             logging.error("Error creating perfil: ", ex)
@@ -89,26 +89,23 @@ class social:
         except Exception as ex:
             logging.error("Error getting usuario: ", ex)
 
-    def insert_usuario(self, nombre_usuario, nombre, password, saldo, articulos_adquiridos):
+    def get_perfil_by_id(self, nombre_usuario):
         try:
-            self.db.execute(f"INSERT INTO Usuario VALUES ('{nombre_usuario}', {saldo}, '{nombre}', '{password}', '{articulos_adquiridos}')")
+            self.db.execute(f"SELECT * FROM Perfil WHERE Nombre_Usuario = '{nombre_usuario}'")
+            return self.db.fetchone()
+        except Exception as ex:
+            logging.error("Error getting perfil: ", ex)
+
+    def insert_usuario(self, nombre_usuario, nombre, email, password, saldo, articulos_adquiridos):
+        try:
+            self.db.execute(f"INSERT INTO Usuario VALUES ('{nombre_usuario}', '{email}', '{saldo}', '{nombre}', '{password}', '{articulos_adquiridos}')")
             self.db.commit()
             return True
         except Exception as ex:
             logging.error("Error inserting usuario: ", ex)
             self.db.rollback()
             return False
-    
-    def update_usuario(self, nombre_usuario, nombre, password, articulos_adquiridos):
-        try:
-            self.db.execute(f"UPDATE Usuario SET nombre = '{nombre}', password = '{password}',"
-                            "articulos_adquiridos = '{articulos_adquiridos}' WHERE nombre_usuario = '{nombre_usuario}'")
-            self.db.commit()
-            return True
-        except Exception as ex:
-            logging.error("Error updating usuario: ", ex)
-            self.db.rollback()
-            return False
+
 
     def update_articulos_adquiridos(self, nombre_usuario, articulos_adquiridos):
         try:
@@ -142,28 +139,28 @@ class social:
 
 
 
-    def get_perfil_by_id(self, nombre_usuario, email):
+    def get_perfil_by_id(self, nombre_usuario):
         try:
-            self.db.execute(f"SELECT * FROM Perfil WHERE Nombre_Usuario = '{nombre_usuario}' AND Email = '{email}'")
+            self.db.execute(f"SELECT * FROM Perfil WHERE Nombre_Usuario = '{nombre_usuario}'")
             return self.db.fetchone()
         except Exception as ex:
             logging.error("Error getting perfil: ", ex)
 
-    def insert_perfil(self, nombre_usuario, email, fotografia, biografia, logros, articulos_adquiridos):
+    def insert_perfil(self, nombre_usuario, email, fotografia, biografia, logros):
         try:
-            self.db.execute(f"INSERT INTO Perfil VALUES ('{nombre_usuario}', '{email}', '{fotografia}',"
-                            "'{biografia}', '{logros}', '{articulos_adquiridos}')")
+            self.db.execute(f"INSERT INTO Perfil VALUES ('{nombre_usuario}', '{fotografia}','{biografia}', '{logros}')")
+            self.db.commit()
             return True
         except Exception as ex:
             logging.error("Error inserting perfil: ", ex)
             self.db.rollback()
             return False
 
-    def update_perfil(self, nombre_usuario, email, fotografia, biografia, logros, articulos_adquiridos):
+    def update_perfil(self, nombre_usuario, fotografia, biografia, logros):
         try:
             self.db.execute(f"UPDATE Perfil SET fotografia = '{fotografia}', biografia = '{biografia}',"
-                            "logros = '{logros}', articulos_adquiridos = '{articulos_adquiridos}'"
-                            "WHERE nombre_usuario = '{nombre_usuario}' AND email = '{email}'")
+                            "logros = '{logros}'"
+                            "WHERE nombre_usuario = '{nombre_usuario}'")
             self.db.commit()
             return True
         except Exception as ex:
