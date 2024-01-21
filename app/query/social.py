@@ -118,6 +118,13 @@ class social:
             self.db.rollback()
             return False
 
+    def get_saldo_by_id(self, nombre_usuario):
+        try:
+            self.db.execute(f"SELECT saldo FROM Usuario WHERE Nombre_Usuario = '{nombre_usuario}'")
+            return self.db.fetchone()
+        except Exception as ex:
+            logging.error("Error getting saldo: ", ex)
+            
     def update_saldo(self, nombre_usuario, saldo):
         try:
             self.db.execute(f"UPDATE Usuario SET saldo = {saldo} WHERE nombre_usuario = '{nombre_usuario}'")
