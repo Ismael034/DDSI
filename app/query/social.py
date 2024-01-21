@@ -50,7 +50,7 @@ class social:
                             "Password VARCHAR(100),"
                             "Activo BOOLEAN,"
                             "Articulos_adquiridos VARCHAR(20))")
-        
+
         except Exception as ex:
             logging.error("Error creating usuario table:", ex)
 
@@ -63,7 +63,12 @@ class social:
                             "Logros VARCHAR(300),"
                             "FOREIGN KEY (Nombre_Usuario) REFERENCES Usuario(Nombre_Usuario),"
                             "PRIMARY KEY (Nombre_Usuario))")
-        
+
+            self.db.execute("CREATE TRIGGER crear_perfil AFTER INSERT ON Usuario "
+                                "FOR EACH ROW "
+                                "BEGIN "
+                                "INSERT INTO Perfil VALUES (NEW.Nombre_Usuario, '', '', '');"
+                                "END;")
         except Exception as ex:
             logging.error("Error creating perfil: ", ex)
             self.db.rollback()
@@ -124,7 +129,7 @@ class social:
             return self.db.fetchone()
         except Exception as ex:
             logging.error("Error getting saldo: ", ex)
-            
+
     def update_saldo(self, nombre_usuario, saldo):
         try:
             self.db.execute(f"UPDATE Usuario SET saldo = {saldo} WHERE nombre_usuario = '{nombre_usuario}'")

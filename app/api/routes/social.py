@@ -37,7 +37,7 @@ def create_usuario():
             return jsonify({'error': 'invalid values'}), 400
 
         q.insert_usuario(nombre_usuario, nombre, email, password, saldo, articulos_adquiridos)
-        q.insert_perfil(nombre_usuario, '', '', '', '')
+        #q.insert_perfil(nombre_usuario, '', '', '', '')
         return jsonify({'message': 'usuario creado'})
 
     except Exception as ex:
