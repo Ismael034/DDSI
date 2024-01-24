@@ -35,7 +35,7 @@ def eliminar_videojuego():
     console.print("Eliminar videojuego", style="bold magenta")
     cvideojuego = Prompt.ask("Ingresa el titulo del videojuego")
     
-    response = requests.delete('http://127.0.0.1:5000/tienda/{}'.format(cvideojuego))
+    response = requests.delete('http://127.0.0.1:5000/tienda/',json={'titulo':cvideojuego,'creador':gv.nombre_usuario})
     
     if response.status_code == 200 and response.json()[1] != False:
         console.print("Videojuego borrado exitosamente", style="green")

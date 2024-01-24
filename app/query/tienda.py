@@ -79,13 +79,17 @@ class tienda:
             self.db.rollback()
             return "Error inserting videojuego", False
         
-    def delete_videojuego(self, cvideojuego):
+    def delete_videojuego(self, cvideojuego,creador):
         try:
             #Comprobar si videojuego existe
             self.db.execute(f"SELECT * FROM Videojuego WHERE Titulo_Videojuego = '{cvideojuego}'")
             if self.db.fetchone() is None:
                 return "El videojuego no existe", False
-            self.db.execute(f"DELETE FROM Videojuego WHERE Titulo_Videojuego = '{cvideojuego}'")
+            self.db.execute(f"SELECT Nombre_Usuario FROM Videojuego WHERE Titulo_Videojuego = '{cvideojuego}'")
+            escreador = self.db.fetchone()
+            if escreador[0] != creador:
+                return "No es el creador del videjuego", False
+            self.db.execute(f"DELETE FROM Videojuego WHERE Titulo_Videojuego = '{cvideojuego}' AND Nombre_Usuario ='{creador}'")
             self.db.commit()
             return "Juego borrado correctamente", True
         except Exception as ex:

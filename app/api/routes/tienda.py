@@ -38,9 +38,12 @@ def insert_videojuego():
 
 
 #Eliminar videojuego
-@tienda.route('/tienda/<cvideojuego>', methods=['DELETE'])
-def delete_videojuego(cvideojuego):
-  result = q.delete_videojuego(cvideojuego)
+@tienda.route('/tienda/', methods=['DELETE'])
+def delete_videojuego():
+  record = json.loads(request.data)
+  cvideojuego = record['titulo']
+  creador = record['creador']
+  result = q.delete_videojuego(cvideojuego,creador)
   return jsonify(result)
 
 #Actualizar version de un videojuego
